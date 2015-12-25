@@ -7,6 +7,8 @@ import (
 	"io/ioutil"
 	"os"
 	"strings"
+
+	"github.com/yamnikov-oleg/projektor/conf"
 )
 
 var (
@@ -49,7 +51,7 @@ func ReadEntry(filename string) (en *Entry, err error) {
 	}
 	defer fd.Close()
 
-	cf, err := ReadConfFile(fd)
+	cf, err := conf.Read(fd)
 	if err != nil {
 		return
 	}

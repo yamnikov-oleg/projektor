@@ -1,4 +1,4 @@
-package main
+package conf
 
 import (
 	"bufio"
@@ -17,15 +17,15 @@ func (v Values) Has(key string) bool {
 	return ok
 }
 
-type ConfFile struct {
+type File struct {
 	Sections map[string]Values
 }
 
-func ReadConfFile(reader io.Reader) (cf *ConfFile, err error) {
+func Read(reader io.Reader) (cf *File, err error) {
 	scanner := bufio.NewScanner(reader)
 	section := ""
 
-	cf = &ConfFile{}
+	cf = &File{}
 	cf.Sections = make(map[string]Values)
 	cf.Sections[section] = make(Values)
 
@@ -55,6 +55,6 @@ func ReadConfFile(reader io.Reader) (cf *ConfFile, err error) {
 	return
 }
 
-func (cf *ConfFile) Sec(name string) Values {
+func (cf *File) Sec(name string) Values {
 	return cf.Sections[name]
 }
