@@ -84,25 +84,25 @@ type EntriesReader struct {
 func NewEntriesReader() *EntriesReader {
 	er := &EntriesReader{nil, -1, nil}
 
-	efs, err := ioutil.ReadDir(sharedAppDir)
-	if err != nil {
+	if err := er.AppendDirectory(sharedAppDir); err != nil {
 		errduring("reading of the directory `%v`", err, "Skipping it", sharedAppDir)
-	} else {
-		for _, fi := range efs {
-			er.files = append(er.files, sharedAppDir+"/"+fi.Name())
-		}
 	}
-
-	efs, err = ioutil.ReadDir(localAppDir)
-	if err != nil {
+	if err := er.AppendDirectory(localAppDir); err != nil {
 		errduring("reading of the directory `%v`", err, "Skipping it", localAppDir)
-	} else {
-		for _, fi := range efs {
-			er.files = append(er.files, localAppDir+"/"+fi.Name())
-		}
 	}
 
 	return er
+}
+
+func (er *EntriesReader) AppendDirectory(dir string) error {
+	efs, err := ioutil.ReadDir(dir)
+	if err != nil {
+		return err
+	}
+	for _, fi := range efs {
+		er.files = append(er.files, dir+"/"+fi.Name())
+	}
+	return nil
 }
 
 func (er *EntriesReader) Good() bool {
