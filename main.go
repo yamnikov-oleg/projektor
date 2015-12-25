@@ -2,7 +2,12 @@
 
 package main
 
-import "fmt"
+import (
+	"fmt"
+	"os"
+
+	"github.com/yamnikov-oleg/go-gtk/gtk"
+)
 
 const (
 	Verbose = true
@@ -26,8 +31,9 @@ func errduring(action string, err error, nextmove string, a ...interface{}) {
 }
 
 func main() {
-	reader := NewEntriesReader()
-	for reader.Next() {
-		fmt.Printf("%#v\n", reader.Entry)
-	}
+	gtk.Init(&os.Args)
+
+	ConstructWindow()
+
+	gtk.Main()
 }
