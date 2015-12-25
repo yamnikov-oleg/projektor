@@ -8,6 +8,10 @@ import (
 
 type Values map[string]string
 
+func (v Values) Bool(key string) bool {
+	return v[key] == "true"
+}
+
 func (v Values) Str(key string) string {
 	return v[key]
 }
