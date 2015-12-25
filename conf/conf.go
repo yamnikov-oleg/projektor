@@ -8,7 +8,7 @@ import (
 
 type Values map[string]string
 
-func (v Values) Val(key string) string {
+func (v Values) Str(key string) string {
 	return v[key]
 }
 
@@ -53,8 +53,4 @@ func Read(reader io.Reader) (cf *File, err error) {
 
 	err = scanner.Err()
 	return
-}
-
-func (cf *File) Sec(name string) Values {
-	return cf.Sections[name]
 }

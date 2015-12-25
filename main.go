@@ -57,9 +57,10 @@ func ReadEntry(filename string) (en *Entry, err error) {
 	}
 
 	en = &Entry{}
-	en.Name = cf.Sec("Desktop Entry").Val("Name")
-	en.Icon = cf.Sec("Desktop Entry").Val("Icon")
-	en.Exec = cf.Sec("Desktop Entry").Val("Exec")
+	section := cf.Sections["Desktop Entry"]
+	en.Name = section.Str("Name")
+	en.Icon = section.Str("Icon")
+	en.Exec = section.Str("Exec")
 
 	en.Exec = strings.Replace(en.Exec, " %f", "", -1)
 	en.Exec = strings.Replace(en.Exec, " %F", "", -1)
