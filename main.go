@@ -3,6 +3,7 @@
 package main
 
 import (
+	"errors"
 	"fmt"
 	"io/ioutil"
 	"os"
@@ -56,16 +57,21 @@ func ReadEntry(filename string) (en *Entry, err error) {
 		return
 	}
 
-	en = &Entry{}
 	section := cf.Sections["Desktop Entry"]
+	if section.Bool("Hidden") {
+		return nil, errors.New("desktop entry hidden")
+	}
+	if section.Bool("NoDisplay") {
+		return nil, errors.New("desktop entry not displayed")
+	}
+
+	en = &Entry{}
 	en.Name = section.Str("Name")
 	en.Icon = section.Str("Icon")
-	en.Exec = section.Str("Exec")
 
-	en.Exec = strings.Replace(en.Exec, " %f", "", -1)
-	en.Exec = strings.Replace(en.Exec, " %F", "", -1)
-	en.Exec = strings.Replace(en.Exec, " %u", "", -1)
-	en.Exec = strings.Replace(en.Exec, " %U", "", -1)
+	r := strings.NewReplacer(" %f", "", " %F", "", " %u", "", " %U", "")
+	en.Exec = r.Replace(section.Str("Exec"))
+
 	return
 }
 
