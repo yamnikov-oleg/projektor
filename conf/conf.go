@@ -31,7 +31,6 @@ func Read(reader io.Reader) (cf *File, err error) {
 
 	cf = &File{}
 	cf.Sections = make(map[string]Values)
-	cf.Sections[section] = make(Values)
 
 	for scanner.Scan() {
 		line := scanner.Text()
@@ -52,7 +51,9 @@ func Read(reader io.Reader) (cf *File, err error) {
 		key := line[:sepIndex]
 		value := line[sepIndex+1:]
 
-		cf.Sections[section][key] = value
+		if section != "" {
+			cf.Sections[section][key] = value
+		}
 	}
 
 	err = scanner.Err()
