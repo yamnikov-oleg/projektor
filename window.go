@@ -83,9 +83,7 @@ func setupWindow() {
 	Ui.Window.Connect("key-press-event", func(ctx *glib.CallbackContext) {
 		arg := ctx.Args(0)
 		e := *(**gdk.EventKey)(unsafe.Pointer(&arg))
-		if e.Keyval == gdk.KEY_Escape {
-			gtk.MainQuit()
-		}
+		OnWindowKeyPress(e)
 	})
 	Ui.Window.Connect("focus-out-event", gtk.MainQuit)
 	Ui.Window.Connect("destroy", gtk.MainQuit)
@@ -111,4 +109,10 @@ func ListStoreAppendEntry(entry *DtEntry) {
 		1, entry.Name,
 		2, entry.Exec,
 	)
+}
+
+func OnWindowKeyPress(e *gdk.EventKey) {
+	if e.Keyval == gdk.KEY_Escape {
+		gtk.MainQuit()
+	}
 }
