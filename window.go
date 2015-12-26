@@ -24,7 +24,7 @@ var Ui struct {
 }
 
 func setupSearchEntry() {
-	Ui.SearchEntry = gtk.NewEntry()
+	Ui.SearchEntry = gtk.NewSearchEntry()
 	Ui.SearchEntry.GrabFocus()
 }
 
