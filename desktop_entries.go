@@ -4,6 +4,7 @@ import (
 	"errors"
 	"io/ioutil"
 	"os"
+	"sort"
 	"strings"
 
 	"github.com/yamnikov-oleg/projektor/conf"
@@ -123,13 +124,28 @@ func (er *EntriesReader) Next() bool {
 	return true
 }
 
-var DesktopEntries []*DtEntry
+type DtList []*DtEntry
+
+func (list DtList) Len() int {
+	return len(list)
+}
+
+func (list DtList) Less(i, j int) bool {
+	return list[i].LoCaseName < list[j].LoCaseName
+}
+
+func (list DtList) Swap(i, j int) {
+	list[i], list[j] = list[j], list[i]
+}
+
+var DesktopEntries DtList
 
 func IndexDesktopEntries() {
 	reader := NewEntriesReader()
 	for reader.Next() {
 		DesktopEntries = append(DesktopEntries, reader.Entry)
 	}
+	sort.Sort(DesktopEntries)
 }
 
 type EntriesIterator struct {
