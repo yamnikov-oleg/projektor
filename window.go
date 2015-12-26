@@ -84,7 +84,7 @@ func setupWindow() {
 	Ui.Window.SetDecorated(false)
 	Ui.Window.SetSkipTaskbarHint(true)
 	Ui.Window.SetBorderWidth(6)
-	Ui.Window.SetSizeRequest(400, 300)
+	Ui.Window.SetSizeRequest(400, 480)
 
 	Ui.Window.Connect("key-press-event", func(ctx *glib.CallbackContext) {
 		arg := ctx.Args(0)
