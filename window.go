@@ -98,6 +98,11 @@ func setupWindow() {
 		e := *(**gdk.EventKey)(unsafe.Pointer(&arg))
 		OnWindowKeyPress(e)
 	})
+	Ui.Window.Connect("button-press-event", func(ctx *glib.CallbackContext) {
+		arg := ctx.Args(0)
+		e := *(**gdk.EventButton)(unsafe.Pointer(&arg))
+		OnWindowButtonPress(e)
+	})
 	Ui.Window.Connect("destroy", gtk.MainQuit)
 	Ui.Window.Connect("focus-in-event", func() {
 		pointerGrab()
@@ -148,7 +153,7 @@ func treeViewSelectFirst() {
 }
 
 func pointerGrab() {
-	status := Ui.Pointer.Grab(Ui.Window.GetWindow(), gdk.OWNERSHIP_APPLICATION, true, 0, nil, gdk.CURRENT_TIME)
+	status := Ui.Pointer.Grab(Ui.Window.GetWindow(), gdk.OWNERSHIP_APPLICATION, true, gdk.BUTTON_PRESS_MASK, nil, gdk.CURRENT_TIME)
 	if status != gdk.GRAB_SUCCESS {
 		errduring("pointer grabbing, grab status %v", nil, "", status)
 	}
@@ -189,6 +194,18 @@ func OnWindowKeyPress(e *gdk.EventKey) {
 		Ui.ListStore.GetValue(&iter, 2, &val)
 		cmd := strings.Fields(val.GetString())
 		exec.Command(cmd[0], cmd[1:]...).Start()
+		gtk.MainQuit()
+	}
+}
+
+func OnWindowButtonPress(e *gdk.EventButton) {
+	var wid, hei int
+	Ui.Window.GetSize(&wid, &hei)
+
+	clickX := int(e.X)
+	clickY := int(e.Y)
+
+	if clickX < 0 || clickX > wid || clickY < 0 || clickY > hei {
 		gtk.MainQuit()
 	}
 }
