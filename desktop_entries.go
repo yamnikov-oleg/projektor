@@ -19,9 +19,10 @@ var (
 )
 
 type DtEntry struct {
-	Name string
-	Icon string
-	Exec string
+	Name       string
+	LoCaseName string
+	Icon       string
+	Exec       string
 }
 
 func DtEntryFromFile(filename string) (en *DtEntry, err error) {
@@ -46,6 +47,7 @@ func DtEntryFromFile(filename string) (en *DtEntry, err error) {
 
 	en = &DtEntry{}
 	en.Name = section.Str("Name")
+	en.LoCaseName = strings.ToLower(en.Name)
 	en.Icon = section.Str("Icon")
 
 	r := strings.NewReplacer(" %f", "", " %F", "", " %u", "", " %U", "")

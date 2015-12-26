@@ -44,13 +44,14 @@ func setupSearchLogic() {
 	Ui.SearchEntry.Connect("changed", func() {
 		Ui.ListStore.Clear()
 		text := Ui.SearchEntry.GetText()
+		text = strings.ToLower(text)
 		if text == "" {
 			return
 		}
 		reader := NewEntriesInterator()
 		for reader.Next() {
 			en := reader.Entry()
-			if strings.Contains(en.Name, text) {
+			if strings.Contains(en.LoCaseName, text) {
 				ListStoreAppendEntry(en)
 			}
 		}
