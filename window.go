@@ -49,17 +49,10 @@ func setupSearchLogic() {
 	Ui.SearchEntry.Connect("changed", func() {
 
 		Ui.ListStore.Clear()
-		text := Ui.SearchEntry.GetText()
-		text = strings.ToLower(text)
-		if text == "" {
-			return
-		}
-		reader := NewEntriesInterator()
-		for reader.Next() {
-			en := reader.Entry()
-			if strings.Contains(en.LoCaseName, text) {
-				listStoreAppendEntry(en, text)
-			}
+		text := strings.ToLower(Ui.SearchEntry.GetText())
+		results := SearchDesktopEntries(text)
+		for _, entry := range results {
+			listStoreAppendEntry(entry, text)
 		}
 		treeViewSelectFirst()
 
