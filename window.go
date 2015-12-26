@@ -20,6 +20,7 @@ var Ui struct {
 	ListStore   *gtk.ListStore
 	ScrollWin   *gtk.ScrolledWindow
 	TreeView    *gtk.TreeView
+	Pointer     *gdk.Device
 }
 
 func setupSearchEntry() {
@@ -78,6 +79,10 @@ func setupUiElements() {
 	setupSearchLogic()
 }
 
+func setupPointerDevice() {
+	Ui.Pointer = gdk.GetDefaultDisplay().GetDeviceManager().GetClientPointer()
+}
+
 func setupWindow() {
 	Ui.Window = gtk.NewWindow(gtk.WINDOW_TOPLEVEL)
 
@@ -87,18 +92,21 @@ func setupWindow() {
 	Ui.Window.SetSkipTaskbarHint(true)
 	Ui.Window.SetBorderWidth(6)
 	Ui.Window.SetSizeRequest(400, 300)
-	Ui.Window.SetKeepAbove(true)
 
 	Ui.Window.Connect("key-press-event", func(ctx *glib.CallbackContext) {
 		arg := ctx.Args(0)
 		e := *(**gdk.EventKey)(unsafe.Pointer(&arg))
 		OnWindowKeyPress(e)
 	})
-	//Ui.Window.Connect("focus-out-event", gtk.MainQuit)
 	Ui.Window.Connect("destroy", gtk.MainQuit)
+	Ui.Window.Connect("focus-in-event", func() {
+		pointerGrab()
+	})
 
 	setupUiElements()
 	Ui.Window.Add(Ui.RootBox)
+
+	setupPointerDevice()
 }
 
 func StartUi() {
@@ -137,6 +145,13 @@ func treeViewSelectFirst() {
 		return
 	}
 	treeViewSelect(&iter)
+}
+
+func pointerGrab() {
+	status := Ui.Pointer.Grab(Ui.Window.GetWindow(), gdk.OWNERSHIP_APPLICATION, true, 0, nil, gdk.CURRENT_TIME)
+	if status != gdk.GRAB_SUCCESS {
+		errduring("pointer grabbing, grab status %v", nil, "", status)
+	}
 }
 
 func OnWindowKeyPress(e *gdk.EventKey) {
