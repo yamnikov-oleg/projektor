@@ -2,6 +2,7 @@ package main
 
 import (
 	"os"
+	"os/exec"
 	"strings"
 	"unsafe"
 
@@ -153,5 +154,17 @@ func OnWindowKeyPress(e *gdk.EventKey) {
 		}
 		treeViewSelect(&iter)
 
+	case gdk.KEY_Return:
+		selection := Ui.TreeView.GetSelection()
+		if selection.CountSelectedRows() == 0 {
+			return
+		}
+		var iter gtk.TreeIter
+		selection.GetSelected(&iter)
+		var val glib.GValue
+		Ui.ListStore.GetValue(&iter, 2, &val)
+		cmd := strings.Fields(val.GetString())
+		exec.Command(cmd[0], cmd[1:]...).Start()
+		gtk.MainQuit()
 	}
 }
