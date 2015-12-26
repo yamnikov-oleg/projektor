@@ -49,7 +49,9 @@ func setupSearchLogic() {
 	Ui.SearchEntry.Connect("changed", func() {
 
 		Ui.ListStore.Clear()
-		text := strings.ToLower(Ui.SearchEntry.GetText())
+		text := Ui.SearchEntry.GetText()
+		text = strings.ToLower(text)
+		text = strings.TrimSpace(text)
 		results := SearchDesktopEntries(text)
 		for _, entry := range results {
 			listStoreAppendEntry(entry, text)
