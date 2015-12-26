@@ -18,13 +18,13 @@ var (
 	localAppDir  = os.Getenv("HOME") + "/.local/share/applications"
 )
 
-type Entry struct {
+type DtEntry struct {
 	Name string
 	Icon string
 	Exec string
 }
 
-func EntryFromFile(filename string) (en *Entry, err error) {
+func DtEntryFromFile(filename string) (en *DtEntry, err error) {
 	fd, err := os.Open(filename)
 	if err != nil {
 		return
@@ -44,7 +44,7 @@ func EntryFromFile(filename string) (en *Entry, err error) {
 		return nil, errors.New("desktop entry not displayed")
 	}
 
-	en = &Entry{}
+	en = &DtEntry{}
 	en.Name = section.Str("Name")
 	en.Icon = section.Str("Icon")
 
@@ -57,7 +57,7 @@ func EntryFromFile(filename string) (en *Entry, err error) {
 type EntriesReader struct {
 	files        []string
 	currentIndex int
-	Entry        *Entry
+	Entry        *DtEntry
 }
 
 func NewEntriesReader() *EntriesReader {
@@ -112,11 +112,44 @@ func (er *EntriesReader) Next() bool {
 		return er.Next()
 	}
 
-	en, err := EntryFromFile(filepath)
+	en, err := DtEntryFromFile(filepath)
 	if err != nil {
 		return er.Next()
 	}
 	er.Entry = en
 
 	return true
+}
+
+var DesktopEntries []*DtEntry
+
+func IndexDesktopEntries() {
+	reader := NewEntriesReader()
+	for reader.Next() {
+		DesktopEntries = append(DesktopEntries, reader.Entry)
+	}
+}
+
+type EntriesIterator struct {
+	Index int
+}
+
+func NewEntriesInterator() *EntriesIterator {
+	return &EntriesIterator{}
+}
+
+func (ei *EntriesIterator) Good() bool {
+	return ei.Index >= 0 && ei.Index < len(DesktopEntries)
+}
+
+func (ei *EntriesIterator) Next() bool {
+	ei.Index++
+	return ei.Good()
+}
+
+func (ei *EntriesIterator) Entry() *DtEntry {
+	if !ei.Good() {
+		return nil
+	}
+	return DesktopEntries[ei.Index]
 }

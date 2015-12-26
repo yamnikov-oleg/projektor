@@ -47,9 +47,9 @@ func setupSearchLogic() {
 		if text == "" {
 			return
 		}
-		reader := NewEntriesReader()
+		reader := NewEntriesInterator()
 		for reader.Next() {
-			en := reader.Entry
+			en := reader.Entry()
 			if strings.Contains(en.Name, text) {
 				var iter gtk.TreeIter
 				Ui.ListStore.Append(&iter)
