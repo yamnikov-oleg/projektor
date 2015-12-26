@@ -137,7 +137,7 @@ type EntriesIterator struct {
 }
 
 func NewEntriesInterator() *EntriesIterator {
-	return &EntriesIterator{}
+	return &EntriesIterator{-1}
 }
 
 func (ei *EntriesIterator) Good() bool {
