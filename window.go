@@ -44,6 +44,8 @@ func setupAppList() {
 	Ui.ScrollWin = gtk.NewScrolledWindow(nil, nil)
 	Ui.ScrollWin.SetCanFocus(false)
 	Ui.ScrollWin.Add(Ui.TreeView)
+
+	Ui.TreeView.Connect("row-activated", OnTreeViewRowActivate)
 }
 
 func makeSearching() {
@@ -181,6 +183,22 @@ func pointerGrab() {
 	}
 }
 
+func runSelectedApp() {
+	selection := Ui.TreeView.GetSelection()
+	if selection.CountSelectedRows() == 0 {
+		return
+	}
+
+	var iter gtk.TreeIter
+	selection.GetSelected(&iter)
+
+	var val glib.GValue
+	Ui.ListStore.GetValue(&iter, 2, &val)
+	cmd := strings.Fields(val.GetString())
+	exec.Command(cmd[0], cmd[1:]...).Start()
+	gtk.MainQuit()
+}
+
 func OnWindowKeyPress(e *gdk.EventKey) {
 	switch e.Keyval {
 
@@ -206,17 +224,7 @@ func OnWindowKeyPress(e *gdk.EventKey) {
 		treeViewSelect(&iter)
 
 	case gdk.KEY_Return:
-		selection := Ui.TreeView.GetSelection()
-		if selection.CountSelectedRows() == 0 {
-			return
-		}
-		var iter gtk.TreeIter
-		selection.GetSelected(&iter)
-		var val glib.GValue
-		Ui.ListStore.GetValue(&iter, 2, &val)
-		cmd := strings.Fields(val.GetString())
-		exec.Command(cmd[0], cmd[1:]...).Start()
-		gtk.MainQuit()
+		runSelectedApp()
 	}
 }
 
@@ -230,4 +238,8 @@ func OnWindowButtonPress(e *gdk.EventButton) {
 	if clickX < 0 || clickX > wid || clickY < 0 || clickY > hei {
 		gtk.MainQuit()
 	}
+}
+
+func OnTreeViewRowActivate() {
+	runSelectedApp()
 }
