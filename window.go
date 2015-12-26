@@ -51,13 +51,7 @@ func setupSearchLogic() {
 		for reader.Next() {
 			en := reader.Entry()
 			if strings.Contains(en.Name, text) {
-				var iter gtk.TreeIter
-				Ui.ListStore.Append(&iter)
-				Ui.ListStore.Set(&iter,
-					0, en.Icon,
-					1, en.Name,
-					2, en.Exec,
-				)
+				ListStoreAppendEntry(en)
 			}
 		}
 	})
@@ -106,4 +100,14 @@ func StartUi() {
 	Ui.Window.ShowAll()
 
 	gtk.Main()
+}
+
+func ListStoreAppendEntry(entry *DtEntry) {
+	var iter gtk.TreeIter
+	Ui.ListStore.Append(&iter)
+	Ui.ListStore.Set(&iter,
+		0, entry.Icon,
+		1, entry.Name,
+		2, entry.Exec,
+	)
 }
