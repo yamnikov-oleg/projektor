@@ -7,6 +7,7 @@ import (
 	"unsafe"
 
 	"github.com/yamnikov-oleg/go-gtk/gdk"
+	"github.com/yamnikov-oleg/go-gtk/gio"
 	"github.com/yamnikov-oleg/go-gtk/glib"
 	"github.com/yamnikov-oleg/go-gtk/gtk"
 )
@@ -31,10 +32,10 @@ func setupAppList() {
 
 	cr := gtk.NewCellRendererPixbuf()
 	glib.ObjectFromNative(unsafe.Pointer(cr.ToCellRenderer())).Set("stock-size", int(gtk.ICON_SIZE_DIALOG))
-	Ui.TreeView.AppendColumn(gtk.NewTreeViewColumnWithAttributes("Icon", cr, "icon-name", 0))
+	Ui.TreeView.AppendColumn(gtk.NewTreeViewColumnWithAttributes2("Icon", cr, "gicon", 0))
 	Ui.TreeView.AppendColumn(gtk.NewTreeViewColumnWithAttributes("Id", gtk.NewCellRendererText(), "text", 1))
 
-	Ui.ListStore = gtk.NewListStore(glib.G_TYPE_STRING, glib.G_TYPE_STRING, glib.G_TYPE_STRING)
+	Ui.ListStore = gtk.NewListStore(gio.GetIconType(), glib.G_TYPE_STRING, glib.G_TYPE_STRING)
 	Ui.TreeView.SetModel(Ui.ListStore)
 
 	Ui.ScrollWin = gtk.NewScrolledWindow(nil, nil)
@@ -110,8 +111,14 @@ func StartUi() {
 func listStoreAppendEntry(entry *DtEntry) {
 	var iter gtk.TreeIter
 	Ui.ListStore.Append(&iter)
+
+	gicon, err := gio.NewIconForString(entry.Icon)
+	if err != nil {
+		errduring("appending entry to ListStore", err, "Skipping it")
+		return
+	}
 	Ui.ListStore.Set(&iter,
-		0, entry.Icon,
+		0, gicon.GIcon,
 		1, entry.Name,
 		2, entry.Exec,
 	)
