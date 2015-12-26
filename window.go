@@ -46,20 +46,20 @@ func setupAppList() {
 	Ui.ScrollWin.Add(Ui.TreeView)
 }
 
+func makeSearching() {
+	Ui.ListStore.Clear()
+	text := Ui.SearchEntry.GetText()
+	text = strings.ToLower(text)
+	text = strings.TrimSpace(text)
+	results := SearchDesktopEntries(text)
+	for _, entry := range results {
+		listStoreAppendEntry(entry, text)
+	}
+	treeViewSelectFirst()
+}
+
 func setupSearchLogic() {
-	Ui.SearchEntry.Connect("changed", func() {
-
-		Ui.ListStore.Clear()
-		text := Ui.SearchEntry.GetText()
-		text = strings.ToLower(text)
-		text = strings.TrimSpace(text)
-		results := SearchDesktopEntries(text)
-		for _, entry := range results {
-			listStoreAppendEntry(entry, text)
-		}
-		treeViewSelectFirst()
-
-	})
+	Ui.SearchEntry.Connect("changed", makeSearching)
 }
 
 func setupUiElements() {
@@ -124,6 +124,7 @@ func StartUi() {
 
 	setupWindow()
 	loadCss()
+	makeSearching()
 	Ui.Window.ShowAll()
 
 	gtk.Main()

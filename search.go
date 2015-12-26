@@ -25,9 +25,9 @@ func (list SearchPairList) Swap(i, j int) {
 }
 
 func SearchDesktopEntries(query string) (entries []*DtEntry) {
-	if query == "" {
-		return
-	}
+	// if query == "" {
+	// 	return
+	// }
 
 	var pairs SearchPairList
 
