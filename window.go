@@ -87,13 +87,14 @@ func setupWindow() {
 	Ui.Window.SetSkipTaskbarHint(true)
 	Ui.Window.SetBorderWidth(6)
 	Ui.Window.SetSizeRequest(400, 300)
+	Ui.Window.SetKeepAbove(true)
 
 	Ui.Window.Connect("key-press-event", func(ctx *glib.CallbackContext) {
 		arg := ctx.Args(0)
 		e := *(**gdk.EventKey)(unsafe.Pointer(&arg))
 		OnWindowKeyPress(e)
 	})
-	Ui.Window.Connect("focus-out-event", gtk.MainQuit)
+	//Ui.Window.Connect("focus-out-event", gtk.MainQuit)
 	Ui.Window.Connect("destroy", gtk.MainQuit)
 
 	setupUiElements()
