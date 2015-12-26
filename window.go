@@ -31,6 +31,7 @@ func setupSearchEntry() {
 func setupAppList() {
 	Ui.TreeView = gtk.NewTreeView()
 	Ui.TreeView.SetCanFocus(false)
+	Ui.TreeView.SetHeadersVisible(false)
 
 	cr := gtk.NewCellRendererPixbuf()
 	glib.ObjectFromNative(unsafe.Pointer(cr.ToCellRenderer())).Set("stock-size", int(gtk.ICON_SIZE_DIALOG))
