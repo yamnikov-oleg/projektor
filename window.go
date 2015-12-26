@@ -37,11 +37,13 @@ func setupAppList() {
 	Ui.TreeView.SetModel(Ui.ListStore)
 
 	Ui.ScrollWin = gtk.NewScrolledWindow(nil, nil)
+	Ui.ScrollWin.SetCanFocus(false)
 	Ui.ScrollWin.Add(Ui.TreeView)
 }
 
 func setupSearchLogic() {
 	Ui.SearchEntry.Connect("changed", func() {
+
 		Ui.ListStore.Clear()
 		text := Ui.SearchEntry.GetText()
 		text = strings.ToLower(text)
@@ -52,14 +54,17 @@ func setupSearchLogic() {
 		for reader.Next() {
 			en := reader.Entry()
 			if strings.Contains(en.LoCaseName, text) {
-				ListStoreAppendEntry(en)
+				listStoreAppendEntry(en)
 			}
 		}
+		treeViewSelectFirst()
+
 	})
 }
 
 func setupUiElements() {
 	Ui.RootBox = gtk.NewVBox(false, 6)
+	Ui.RootBox.SetCanFocus(false)
 
 	setupSearchEntry()
 	Ui.RootBox.PackStart(Ui.SearchEntry, false, false, 0)
@@ -101,7 +106,7 @@ func StartUi() {
 	gtk.Main()
 }
 
-func ListStoreAppendEntry(entry *DtEntry) {
+func listStoreAppendEntry(entry *DtEntry) {
 	var iter gtk.TreeIter
 	Ui.ListStore.Append(&iter)
 	Ui.ListStore.Set(&iter,
@@ -111,8 +116,42 @@ func ListStoreAppendEntry(entry *DtEntry) {
 	)
 }
 
+func treeViewSelect(iter *gtk.TreeIter) {
+	Ui.TreeView.GetSelection().SelectIter(iter)
+	Ui.TreeView.ScrollToCell(Ui.ListStore.GetPath(iter), nil, false, 0, 0)
+}
+
+func treeViewSelectFirst() {
+	var iter gtk.TreeIter
+	if !Ui.ListStore.GetIterFirst(&iter) {
+		return
+	}
+	treeViewSelect(&iter)
+}
+
 func OnWindowKeyPress(e *gdk.EventKey) {
-	if e.Keyval == gdk.KEY_Escape {
+	switch e.Keyval {
+
+	case gdk.KEY_Escape:
 		gtk.MainQuit()
+
+	case gdk.KEY_Up, gdk.KEY_Down:
+		selection := Ui.TreeView.GetSelection()
+		if selection.CountSelectedRows() == 0 {
+			return
+		}
+		var iter gtk.TreeIter
+		selection.GetSelected(&iter)
+		if e.Keyval == gdk.KEY_Up {
+			if !Ui.ListStore.IterPrev(&iter) {
+				return
+			}
+		} else {
+			if !Ui.ListStore.IterNext(&iter) {
+				return
+			}
+		}
+		treeViewSelect(&iter)
+
 	}
 }
