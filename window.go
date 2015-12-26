@@ -1,6 +1,7 @@
 package main
 
 import (
+	"fmt"
 	"os"
 	"os/exec"
 	"strings"
@@ -33,7 +34,7 @@ func setupAppList() {
 	cr := gtk.NewCellRendererPixbuf()
 	glib.ObjectFromNative(unsafe.Pointer(cr.ToCellRenderer())).Set("stock-size", int(gtk.ICON_SIZE_DIALOG))
 	Ui.TreeView.AppendColumn(gtk.NewTreeViewColumnWithAttributes2("Icon", cr, "gicon", 0))
-	Ui.TreeView.AppendColumn(gtk.NewTreeViewColumnWithAttributes("Id", gtk.NewCellRendererText(), "text", 1))
+	Ui.TreeView.AppendColumn(gtk.NewTreeViewColumnWithAttributes("Id", gtk.NewCellRendererText(), "markup", 1))
 
 	Ui.ListStore = gtk.NewListStore(gio.GetIconType(), glib.G_TYPE_STRING, glib.G_TYPE_STRING)
 	Ui.TreeView.SetModel(Ui.ListStore)
@@ -119,7 +120,7 @@ func listStoreAppendEntry(entry *DtEntry) {
 	}
 	Ui.ListStore.Set(&iter,
 		0, gicon.GIcon,
-		1, entry.Name,
+		1, fmt.Sprintf("<i>%v</i>", strings.Replace(entry.Name, "&", "&amp;", -1)),
 		2, entry.Exec,
 	)
 }
