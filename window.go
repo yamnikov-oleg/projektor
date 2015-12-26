@@ -109,10 +109,20 @@ func setupWindow() {
 	setupPointerDevice()
 }
 
+func loadCss() {
+	provider := gtk.NewCssProvider()
+	screen := gdk.GetDefaultDisplay().GetDefaultScreen()
+	gtk.StyleContextAddProviderForScreen(screen, provider, gtk.STYLE_PROVIDER_PRIORITY_APPLICATION)
+
+	err := provider.LoadFromData(CSS_CODE)
+	fmt.Printf("%#v\n", err)
+}
+
 func StartUi() {
 	gtk.Init(&os.Args)
 
 	setupWindow()
+	loadCss()
 	Ui.Window.ShowAll()
 
 	gtk.Main()
