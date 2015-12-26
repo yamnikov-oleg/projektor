@@ -58,7 +58,7 @@ func setupSearchLogic() {
 		for reader.Next() {
 			en := reader.Entry()
 			if strings.Contains(en.LoCaseName, text) {
-				listStoreAppendEntry(en)
+				listStoreAppendEntry(en, text)
 			}
 		}
 		treeViewSelectFirst()
@@ -123,7 +123,22 @@ func StartUi() {
 	gtk.Main()
 }
 
-func listStoreAppendEntry(entry *DtEntry) {
+func escapeAmp(s string) string {
+	return strings.Replace(s, "&", "&amp;", -1)
+}
+
+func entryDisplayName(entry *DtEntry, query string) string {
+	if query == "" {
+		return escapeAmp(entry.Name)
+	}
+	ind := strings.Index(entry.LoCaseName, query)
+	if ind < 0 {
+		return escapeAmp(entry.Name)
+	}
+	return escapeAmp(fmt.Sprintf("%v<b>%v</b>%v", entry.Name[:ind], entry.Name[ind:ind+len(query)], entry.Name[ind+len(query):]))
+}
+
+func listStoreAppendEntry(entry *DtEntry, searchQuery string) {
 	var iter gtk.TreeIter
 	Ui.ListStore.Append(&iter)
 
@@ -134,7 +149,7 @@ func listStoreAppendEntry(entry *DtEntry) {
 	}
 	Ui.ListStore.Set(&iter,
 		0, gicon.GIcon,
-		1, fmt.Sprintf("<i>%v</i>", strings.Replace(entry.Name, "&", "&amp;", -1)),
+		1, entryDisplayName(entry, searchQuery),
 		2, entry.Exec,
 	)
 }
