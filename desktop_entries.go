@@ -15,8 +15,9 @@ const (
 )
 
 var (
-	sharedAppDir = "/usr/share/applications"
-	localAppDir  = os.Getenv("HOME") + "/.local/share/applications"
+	sharedAppDir   = "/usr/share/applications"
+	localAppDir    = os.Getenv("HOME") + "/.local/share/applications"
+	CurrentDesktop = os.Getenv("XDG_CURRENT_DESKTOP")
 )
 
 type DtEntry struct {
@@ -44,6 +45,12 @@ func DtEntryFromFile(filename string) (en *DtEntry, err error) {
 	}
 	if section.Bool("NoDisplay") {
 		return nil, errors.New("desktop entry not displayed")
+	}
+	if section.Has("OnlyShowIn") && !strings.Contains(section.Str("OnlyShowIn"), CurrentDesktop) {
+		return nil, errors.New("desktop entry is hidden on current desktop")
+	}
+	if section.Has("NotShowIn") && strings.Contains(section.Str("NotShowIn"), CurrentDesktop) {
+		return nil, errors.New("desktop entry is hidden on current desktop")
 	}
 
 	en = &DtEntry{}
