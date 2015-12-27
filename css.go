@@ -15,7 +15,7 @@ const CSS_CODE = `
     font-size: 8pt;
   }
   GtkTreeView:selected {
-    background-color: #59b2ed;
+    background-color: rgba(0,0,0,0.1);
   }
   GtkTreeView.cell {
     padding: 6px;
