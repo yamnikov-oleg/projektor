@@ -1,6 +1,7 @@
 package main
 
 import (
+	"fmt"
 	"sort"
 	"strings"
 )
@@ -46,6 +47,12 @@ func SearchDesktopEntries(query string) (entries []*DtEntry) {
 	for i, p := range pairs {
 		entries[i] = p.Entry
 	}
+
+	entries = append(entries, &DtEntry{
+		Icon: "utilities-terminal",
+		Name: fmt.Sprintf("\u2192 <b>%v</b>", query),
+		Exec: query,
+	})
 
 	return
 }
