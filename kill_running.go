@@ -4,7 +4,7 @@ import (
 	"os"
 	"strings"
 
-	ps "github.com/mitchellh/go-ps"
+	"github.com/mitchellh/go-ps"
 )
 
 var (
