@@ -48,11 +48,13 @@ func SearchDesktopEntries(query string) (entries []*DtEntry) {
 		entries[i] = p.Entry
 	}
 
-	entries = append(entries, &DtEntry{
-		Icon: "utilities-terminal",
-		Name: fmt.Sprintf("\u2192 <b>%v</b>", query),
-		Exec: query,
-	})
+	if query != "" {
+		entries = append(entries, &DtEntry{
+			Icon: "application-default-icon",
+			Name: fmt.Sprintf("\u2192 <b>%v</b>", query),
+			Exec: query,
+		})
+	}
 
 	return
 }
