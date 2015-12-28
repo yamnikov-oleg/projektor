@@ -1,6 +1,8 @@
 # projektor
 Fast application launcher for Gnome written in Go
 
+![Screenshot](/screenshots/01.png?raw=true)
+
 ## Building
 
 * Install latest version of Golang from https://golang.org
