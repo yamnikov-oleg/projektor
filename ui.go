@@ -61,7 +61,7 @@ type UiEntry struct {
 }
 
 func (UiEntry) OnChanged() {
-	makeSearching()
+	UpdateSearchResults()
 }
 
 type UiTreeIter struct {
@@ -138,6 +138,27 @@ func (UiTreeView) First() UiTreeIter {
 	return iter
 }
 
+func (UiTreeView) Clear() {
+	Ui.ListStore.Clear()
+}
+
+func (UiTreeView) AppendLaunchEntry(entry *LaunchEntry) {
+	iter := NewTreeIter()
+	Ui.ListStore.Append(iter.TreeIter)
+
+	gicon, err := gio.NewIconForString(entry.Icon)
+	if err != nil {
+		errduring("appending entry to ListStore", err, "Skipping it")
+		return
+	}
+
+	Ui.ListStore.Set(iter.TreeIter,
+		0, gicon.GIcon,
+		1, entry.MarkupName,
+		2, entry.Cmdline,
+	)
+}
+
 type UiPointer struct {
 	*gdk.Device
 }
@@ -147,6 +168,17 @@ func (UiPointer) Grab() {
 	if status != gdk.GRAB_SUCCESS {
 		errduring("pointer grabbing, grab status %v", nil, "", status)
 	}
+}
+
+func UpdateSearchResults() {
+	Ui.TreeView.Clear()
+	text := strings.TrimSpace(Ui.SearchEntry.GetText())
+
+	results := SearchAppEntries(text)
+	for _, entry := range results {
+		Ui.TreeView.AppendLaunchEntry(entry)
+	}
+	Ui.TreeView.First().Select()
 }
 
 func SetupUi() {
@@ -228,7 +260,7 @@ func SetupUi() {
 		errduring("CSS loading", err, "")
 	}
 
-	makeSearching()
+	UpdateSearchResults()
 	Ui.Window.ShowAll()
 	gtk.Main()
 }
