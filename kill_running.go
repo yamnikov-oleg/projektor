@@ -12,35 +12,33 @@ var (
 	Cmdline = os.Args[0]
 )
 
-func KillIfOtherInstance(p ps.Process) bool {
+func KillIfOtherInstance(p ps.Process) {
 	if p.Pid() == Pid {
-		return false
+		return
 	}
 
 	if !strings.Contains(p.Executable(), Cmdline) {
-		return false
+		return
 	}
 
-	op, err := os.FindProcess(p.Pid())
+	osproc, err := os.FindProcess(p.Pid())
 	if err != nil {
-		return false
+		return
 	}
 
-	op.Kill()
-	return true
+	osproc.Kill()
+	os.Exit(0)
 }
 
-func KillIfRunning() (ret bool) {
+func KillIfRunning() {
 	processes, err := ps.Processes()
 	if err != nil {
 		errduring("retreiving process list", err, "Skipping process scanning")
-		return false
+		return
 	}
 
 	for _, p := range processes {
-		if KillIfOtherInstance(p) {
-			ret = true
-		}
+		KillIfOtherInstance(p)
 	}
 
 	return
