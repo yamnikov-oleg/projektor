@@ -189,8 +189,11 @@ func SearchFileEntries(query string) LaunchEntriesList {
 }
 
 func SearchCmdEntries(query string) LaunchEntriesList {
-	isPath, path := ExpandQueryPath(query)
+	if query == "" {
+		return nil
+	}
 
+	isPath, path := ExpandQueryPath(query)
 	if !isPath {
 		return LaunchEntriesList{NewEntryFromCommand(query)}
 	}
