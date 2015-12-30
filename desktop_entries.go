@@ -16,7 +16,7 @@ const (
 
 var (
 	sharedAppDir   = "/usr/share/applications"
-	localAppDir    = os.Getenv("HOME") + "/.local/share/applications"
+	localAppDir    = HOME + "/.local/share/applications"
 	CurrentDesktop = os.Getenv("XDG_CURRENT_DESKTOP")
 )
 

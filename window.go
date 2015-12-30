@@ -51,11 +51,12 @@ func setupAppList() {
 func makeSearching() {
 	Ui.ListStore.Clear()
 	text := Ui.SearchEntry.GetText()
-	text = strings.ToLower(text)
 	text = strings.TrimSpace(text)
+	loText := strings.ToLower(text)
+
 	results := SearchDesktopEntries(text)
 	for _, entry := range results {
-		listStoreAppendEntry(entry, text)
+		listStoreAppendEntry(entry, loText)
 	}
 	treeViewSelectFirst()
 }
