@@ -11,5 +11,5 @@ var (
 func main() {
 	KillIfRunning()
 	IndexDesktopEntries()
-	StartUi()
+	SetupUi()
 }
