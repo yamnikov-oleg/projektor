@@ -1,9 +1,12 @@
 package main
 
 import (
+	"fmt"
 	"io/ioutil"
 	"os"
 	"strings"
+
+	"github.com/yamnikov-oleg/go-gtk/gio"
 )
 
 const (
@@ -134,11 +137,68 @@ func SearchAppEntries(query string) LaunchEntriesList {
 	}
 
 	results.SortByIndex()
+	return results
+}
 
-	specEntry := SpecialEntry(query)
-	if specEntry != nil {
-		results = append(results, specEntry)
+func ExpandQueryPath(query string) (isPath bool, path string) {
+	if query == "" {
+		return false, query
+	}
+	if query[0] != '/' && query[0] != '~' {
+		return false, query
 	}
 
-	return results
+	isPath = true
+	path = query
+
+	if path[0] == '~' {
+		path = HOME + path[1:]
+	}
+	return
+}
+
+func SearchFileEntries(query string) LaunchEntriesList {
+
+	isPath, path := ExpandQueryPath(query)
+	if !isPath {
+		return nil
+	}
+
+	stat, statErr := os.Stat(path)
+	if statErr != nil {
+		return nil
+	}
+
+	if !stat.IsDir() && (stat.Mode().Perm()&0111) != 0 {
+		return nil
+	}
+
+	gFileInfo, fiErr := gio.NewFileForPath(path).QueryInfo("standard::*", gio.FILE_QUERY_INFO_NONE, nil)
+	if fiErr != nil {
+		return nil
+	}
+
+	icon := gFileInfo.GetIcon()
+	return LaunchEntriesList{
+		&LaunchEntry{
+			Icon:       icon.ToString(),
+			MarkupName: fmt.Sprintf("<b>%v</b>", query),
+			Cmdline:    "xdg-open " + path,
+		},
+	}
+}
+
+func SearchCmdEntries(query string) LaunchEntriesList {
+	isPath, path := ExpandQueryPath(query)
+
+	if !isPath {
+		return LaunchEntriesList{NewEntryFromCommand(query)}
+	}
+
+	stat, statErr := os.Stat(path)
+	if statErr != nil || stat.IsDir() || (stat.Mode().Perm()&0111) == 0 {
+		return nil
+	}
+
+	return LaunchEntriesList{NewEntryFromCommand(query)}
 }

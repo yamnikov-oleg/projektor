@@ -60,6 +60,14 @@ func NewEntryFromDesktopFile(filepath string) (le *LaunchEntry, err error) {
 	return
 }
 
+func NewEntryFromCommand(command string) *LaunchEntry {
+	return &LaunchEntry{
+		Icon:       "application-default-icon",
+		MarkupName: fmt.Sprintf("\u2192 <b>%v</b>", command),
+		Cmdline:    command,
+	}
+}
+
 func (le *LaunchEntry) UpdateMarkupName(index, length int) {
 	index2 := index + length
 	le.MarkupName = EscapeAmpersand(
@@ -110,4 +118,13 @@ func (list lelSortableByIndex) Less(i, j int) bool {
 
 func (list lelSortableByIndex) Swap(i, j int) {
 	list[i], list[j] = list[j], list[i]
+}
+
+type EntrySearchFunc func(string) LaunchEntriesList
+
+func SearchEntries(query string, fns []EntrySearchFunc) (list LaunchEntriesList) {
+	for _, fn := range fns {
+		list = append(list, fn(query)...)
+	}
+	return
 }
