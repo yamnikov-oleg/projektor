@@ -163,7 +163,7 @@ func SearchFileEntries(query string) (results LaunchEntriesList) {
 	}
 
 	stat, statErr := os.Stat(queryPath)
-	if statErr == nil {
+	if statErr == nil && (stat.IsDir() || (stat.Mode().Perm()&0111) == 0) {
 		entry, err := NewEntryForFile(queryPath, "<b>"+query+"</b>", query)
 		if err != nil {
 			errduring("making file entry `%v`", err, "Skipping it", queryPath)
