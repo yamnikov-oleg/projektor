@@ -26,7 +26,7 @@ type UiWindow struct {
 	*gtk.Window
 }
 
-func (UiWindow) OnKeyPress(e *gdk.EventKey) {
+func (UiWindow) OnKeyPress(e *gdk.EventKey) bool {
 	switch e.Keyval {
 	case gdk.KEY_Down:
 		Ui.TreeView.Selected().Inc().Select()
@@ -39,7 +39,17 @@ func (UiWindow) OnKeyPress(e *gdk.EventKey) {
 
 	case gdk.KEY_Escape:
 		gtk.MainQuit()
+
+	case gdk.KEY_Tab:
+		selected := Ui.TreeView.Selected()
+		if !selected.None() {
+			tabname := selected.TabName()
+			Ui.SearchEntry.SetText(tabname)
+			Ui.SearchEntry.SelectRegion(len(tabname), -1)
+		}
+		return true
 	}
+	return false
 }
 
 func (UiWindow) OnButtonPress(e *gdk.EventButton) {
@@ -76,6 +86,15 @@ func NewTreeIter() UiTreeIter {
 
 func (iter UiTreeIter) None() bool {
 	return iter.TreeIter == nil
+}
+
+func (iter UiTreeIter) TabName() string {
+	if iter.None() {
+		return ""
+	}
+	var val glib.GValue
+	Ui.ListStore.GetValue(iter.TreeIter, 3, &val)
+	return val.GetString()
 }
 
 func (iter UiTreeIter) Execute() {
@@ -156,6 +175,7 @@ func (UiTreeView) AppendLaunchEntry(entry *LaunchEntry) {
 		0, gicon.GIcon,
 		1, entry.MarkupName,
 		2, entry.Cmdline,
+		3, entry.TabName,
 	)
 }
 
@@ -197,7 +217,12 @@ func SetupUi() {
 	Ui.SearchEntry = UiEntry{gtk.NewSearchEntry()}
 	Ui.ScrollWin = gtk.NewScrolledWindow(nil, nil)
 	Ui.TreeView = UiTreeView{gtk.NewTreeView()}
-	Ui.ListStore = gtk.NewListStore(gio.GetIconType(), glib.G_TYPE_STRING, glib.G_TYPE_STRING)
+	Ui.ListStore = gtk.NewListStore(
+		gio.GetIconType(),  // Icon
+		glib.G_TYPE_STRING, // Name
+		glib.G_TYPE_STRING, // Cmdline
+		glib.G_TYPE_STRING, // TabName
+	)
 	Ui.Pointer = UiPointer{gdk.GetDefaultDisplay().GetDeviceManager().GetClientPointer()}
 
 	//
@@ -209,10 +234,10 @@ func SetupUi() {
 	Ui.Window.SetSkipTaskbarHint(true)
 	Ui.Window.SetBorderWidth(6)
 	Ui.Window.SetSizeRequest(400, 480)
-	Ui.Window.Connect("key-press-event", func(ctx *glib.CallbackContext) {
+	Ui.Window.Connect("key-press-event", func(ctx *glib.CallbackContext) bool {
 		arg := ctx.Args(0)
 		e := *(**gdk.EventKey)(unsafe.Pointer(&arg))
-		Ui.Window.OnKeyPress(e)
+		return Ui.Window.OnKeyPress(e)
 	})
 	Ui.Window.Connect("button-press-event", func(ctx *glib.CallbackContext) {
 		arg := ctx.Args(0)

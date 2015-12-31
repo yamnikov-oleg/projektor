@@ -18,8 +18,12 @@ type LaunchEntry struct {
 	LoCaseName string
 	// Formatted for display on a gtk widget, e.g. "<b>Ato</b>m Text Editor"
 	MarkupName string
-	Icon       string
-	Cmdline    string
+	// Name which is injected into search entry on Tab hit
+	TabName string
+
+	Icon string
+
+	Cmdline string
 	// Describes priority of an entry in results list. Lower index -> higher priority.
 	QueryIndex int
 }
@@ -52,6 +56,7 @@ func NewEntryFromDesktopFile(filepath string) (le *LaunchEntry, err error) {
 
 	le = &LaunchEntry{}
 	le.Name = section.Str("Name")
+	le.TabName = le.Name
 	le.LoCaseName = strings.ToLower(le.Name)
 	le.Icon = section.Str("Icon")
 
@@ -65,6 +70,7 @@ func NewEntryFromCommand(command string) *LaunchEntry {
 	return &LaunchEntry{
 		Icon:       "application-default-icon",
 		MarkupName: fmt.Sprintf("\u2192 <b>%v</b>", command),
+		TabName:    command,
 		Cmdline:    command,
 	}
 }
@@ -79,6 +85,7 @@ func NewEntryForFile(path string, displayName string) (*LaunchEntry, error) {
 	return &LaunchEntry{
 		Icon:       icon.ToString(),
 		MarkupName: fmt.Sprintf("<b>%v</b>", displayName),
+		TabName:    displayName,
 		Cmdline:    "xdg-open " + path,
 	}, nil
 }
