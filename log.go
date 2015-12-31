@@ -13,7 +13,7 @@ func logf(format string, a ...interface{}) {
 }
 
 func errduring(action string, err error, nextmove string, a ...interface{}) {
-	line := action + ":\n"
+	line := "Error during " + action + ":\n"
 	if err != nil {
 		line += err.Error() + "\n"
 	}
