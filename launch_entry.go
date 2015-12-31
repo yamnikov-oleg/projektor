@@ -7,6 +7,7 @@ import (
 	"sort"
 	"strings"
 
+	"github.com/yamnikov-oleg/go-gtk/gio"
 	"github.com/yamnikov-oleg/projektor/conf"
 )
 
@@ -66,6 +67,20 @@ func NewEntryFromCommand(command string) *LaunchEntry {
 		MarkupName: fmt.Sprintf("\u2192 <b>%v</b>", command),
 		Cmdline:    command,
 	}
+}
+
+func NewEntryForFile(path string, displayName string) (*LaunchEntry, error) {
+	gFileInfo, fiErr := gio.NewFileForPath(path).QueryInfo("standard::*", gio.FILE_QUERY_INFO_NONE, nil)
+	if fiErr != nil {
+		return nil, fiErr
+	}
+
+	icon := gFileInfo.GetIcon()
+	return &LaunchEntry{
+		Icon:       icon.ToString(),
+		MarkupName: fmt.Sprintf("<b>%v</b>", displayName),
+		Cmdline:    "xdg-open " + path,
+	}, nil
 }
 
 func (le *LaunchEntry) UpdateMarkupName(index, length int) {

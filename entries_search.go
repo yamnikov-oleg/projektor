@@ -1,12 +1,10 @@
 package main
 
 import (
-	"fmt"
 	"io/ioutil"
 	"os"
+	"sort"
 	"strings"
-
-	"github.com/yamnikov-oleg/go-gtk/gio"
 )
 
 const (
@@ -157,31 +155,72 @@ func ExpandQueryPath(query string) (isPath bool, path string) {
 	return
 }
 
-func SearchFileEntries(query string) LaunchEntriesList {
+func SearchFileEntries(query string) (results LaunchEntriesList) {
 
-	isPath, path := ExpandQueryPath(query)
+	isPath, queryPath := ExpandQueryPath(query)
 	if !isPath {
 		return nil
 	}
 
-	_, statErr := os.Stat(path)
-	if statErr != nil {
-		return nil
+	_, statErr := os.Stat(queryPath)
+	if statErr == nil {
+		entry, err := NewEntryForFile(queryPath, query)
+		if err != nil {
+			errduring("making file entry `%v`", err, "Skipping it", queryPath)
+		} else {
+			results = append(results, entry)
+		}
 	}
 
-	gFileInfo, fiErr := gio.NewFileForPath(path).QueryInfo("standard::*", gio.FILE_QUERY_INFO_NONE, nil)
-	if fiErr != nil {
-		return nil
+	dirPath := queryPath
+	queryFileName := ""
+	if lastSlashInd := strings.LastIndex(queryPath, "/"); lastSlashInd >= 0 {
+		dirPath = queryPath[:lastSlashInd+1]
+		queryFileName = queryPath[lastSlashInd+1:]
 	}
 
-	icon := gFileInfo.GetIcon()
-	return LaunchEntriesList{
-		&LaunchEntry{
-			Icon:       icon.ToString(),
-			MarkupName: fmt.Sprintf("<b>%v</b>", query),
-			Cmdline:    "xdg-open " + path,
-		},
+	displayDirPath := query
+	if lastSlashInd := strings.LastIndex(query, "/"); lastSlashInd >= 0 {
+		displayDirPath = query[:lastSlashInd+1]
 	}
+
+	dir, err := os.Open(dirPath)
+	if err != nil {
+		errduring("opening dir `%v`", err, "Skipping it", dirPath)
+		return
+	}
+	dirStat, err := dir.Stat()
+	if err != nil || !dirStat.IsDir() {
+		errduring("retrieving dir stat `%v`", err, "Skipping it", dirPath)
+		return
+	}
+	filenames, err := dir.Readdirnames(-1)
+	if err != nil {
+		errduring("retrieving dirnames `%v`", err, "Skipping it", dirPath)
+	}
+
+	sort.Strings(filenames)
+
+	for _, name := range filenames {
+		filePath := dirPath + name
+		displayFilePath := displayDirPath + name
+
+		if filePath == queryPath {
+			continue
+		}
+		if !strings.HasPrefix(name, queryFileName) {
+			continue
+		}
+
+		entry, err := NewEntryForFile(filePath, displayFilePath)
+		if err != nil {
+			errduring("file entry addition `%v`", err, "Skipping it", filePath)
+			continue
+		}
+		results = append(results, entry)
+	}
+
+	return
 }
 
 func SearchCmdEntries(query string) LaunchEntriesList {
@@ -195,6 +234,7 @@ func SearchCmdEntries(query string) LaunchEntriesList {
 	}
 
 	stat, statErr := os.Stat(path)
+	// not exists OR is a directory OR is not executable
 	if statErr != nil || stat.IsDir() || (stat.Mode().Perm()&0111) == 0 {
 		return nil
 	}
