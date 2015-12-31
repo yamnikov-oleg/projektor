@@ -174,14 +174,10 @@ func UpdateSearchResults() {
 	Ui.TreeView.Clear()
 	text := strings.TrimSpace(Ui.SearchEntry.GetText())
 
-	// results := SearchAppEntries(text)
-	// for _, entry := range results {
-	// 	Ui.TreeView.AppendLaunchEntry(entry)
-	// }
 	searchFuncs := []EntrySearchFunc{
 		SearchAppEntries,
-		SearchFileEntries,
 		SearchCmdEntries,
+		SearchFileEntries,
 	}
 	for _, entry := range SearchEntries(text, searchFuncs) {
 		Ui.TreeView.AppendLaunchEntry(entry)
