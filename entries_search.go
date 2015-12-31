@@ -1,6 +1,7 @@
 package main
 
 import (
+	"fmt"
 	"io/ioutil"
 	"os"
 	"sort"
@@ -156,7 +157,6 @@ func ExpandQueryPath(query string) (isPath bool, path string) {
 }
 
 func SearchFileEntries(query string) (results LaunchEntriesList) {
-
 	isPath, queryPath := ExpandQueryPath(query)
 	if !isPath {
 		return nil
@@ -164,7 +164,7 @@ func SearchFileEntries(query string) (results LaunchEntriesList) {
 
 	_, statErr := os.Stat(queryPath)
 	if statErr == nil {
-		entry, err := NewEntryForFile(queryPath, query)
+		entry, err := NewEntryForFile(queryPath, "<b>"+query+"</b>", query)
 		if err != nil {
 			errduring("making file entry `%v`", err, "Skipping it", queryPath)
 		} else {
@@ -201,18 +201,30 @@ func SearchFileEntries(query string) (results LaunchEntriesList) {
 
 	sort.Strings(filenames)
 
+	queryFnLen := len(queryFileName)
 	for _, name := range filenames {
-		filePath := dirPath + name
-		displayFilePath := displayDirPath + name
-
-		if filePath == queryPath {
-			continue
-		}
 		if !strings.HasPrefix(name, queryFileName) {
 			continue
 		}
 
-		entry, err := NewEntryForFile(filePath, displayFilePath)
+		filePath := dirPath + name
+		if filePath == queryPath {
+			continue
+		}
+
+		tabFilePath := displayDirPath + name
+		if stat, err := os.Stat(filePath); err == nil && stat.IsDir() {
+			tabFilePath += "/"
+		}
+
+		var displayFilePath string
+		if queryFnLen == 0 {
+			displayFilePath = fmt.Sprintf("<b>.../%v</b>", name)
+		} else {
+			displayFilePath = fmt.Sprintf("<b>.../%v</b>%v", name[0:queryFnLen], name[queryFnLen:])
+		}
+
+		entry, err := NewEntryForFile(filePath, displayFilePath, tabFilePath)
 		if err != nil {
 			errduring("file entry addition `%v`", err, "Skipping it", filePath)
 			continue

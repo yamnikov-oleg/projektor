@@ -75,7 +75,7 @@ func NewEntryFromCommand(command string) *LaunchEntry {
 	}
 }
 
-func NewEntryForFile(path string, displayName string) (*LaunchEntry, error) {
+func NewEntryForFile(path string, displayName string, tabName string) (*LaunchEntry, error) {
 	gFileInfo, fiErr := gio.NewFileForPath(path).QueryInfo("standard::*", gio.FILE_QUERY_INFO_NONE, nil)
 	if fiErr != nil {
 		return nil, fiErr
@@ -84,8 +84,8 @@ func NewEntryForFile(path string, displayName string) (*LaunchEntry, error) {
 	icon := gFileInfo.GetIcon()
 	return &LaunchEntry{
 		Icon:       icon.ToString(),
-		MarkupName: fmt.Sprintf("<b>%v</b>", displayName),
-		TabName:    displayName,
+		MarkupName: displayName,
+		TabName:    tabName,
 		Cmdline:    "xdg-open " + path,
 	}, nil
 }
