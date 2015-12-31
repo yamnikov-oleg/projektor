@@ -216,7 +216,7 @@ func SearchFileEntries(query string) (results LaunchEntriesList) {
 			continue
 		}
 
-		tabFilePath := displayDirPath + name
+		tabFilePath := displayDirPath + name + "/"
 		displayFilePath := fmt.Sprintf(".../<b>%v</b>%v", name[0:queryFnLen], name[queryFnLen:])
 
 		entry, err := NewEntryForFile(filePath, displayFilePath, tabFilePath)
