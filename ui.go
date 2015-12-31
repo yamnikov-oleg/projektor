@@ -29,10 +29,10 @@ type UiWindow struct {
 func (UiWindow) OnKeyPress(e *gdk.EventKey) bool {
 	switch e.Keyval {
 	case gdk.KEY_Down:
-		Ui.TreeView.Selected().Inc().Select()
+		Ui.TreeView.Selected().IncCycle().Select()
 
 	case gdk.KEY_Up:
-		Ui.TreeView.Selected().Dec().Select()
+		Ui.TreeView.Selected().DecCycle().Select()
 
 	case gdk.KEY_Return:
 		Ui.TreeView.Selected().Execute()
@@ -130,6 +130,22 @@ func (iter UiTreeIter) Dec() UiTreeIter {
 	return iter
 }
 
+func (iter UiTreeIter) IncCycle() UiTreeIter {
+	iter = iter.Inc()
+	if iter.None() {
+		return Ui.TreeView.First()
+	}
+	return iter
+}
+
+func (iter UiTreeIter) DecCycle() UiTreeIter {
+	iter = iter.Dec()
+	if iter.None() {
+		return Ui.TreeView.Last()
+	}
+	return iter
+}
+
 type UiTreeView struct {
 	*gtk.TreeView
 }
@@ -155,6 +171,20 @@ func (UiTreeView) First() UiTreeIter {
 		return NilTreeIter
 	}
 	return iter
+}
+
+func (UiTreeView) Last() UiTreeIter {
+	count := Ui.TreeView.Count()
+	if count == 0 {
+		return NilTreeIter
+	}
+	iter := NewTreeIter()
+	Ui.ListStore.IterNthChild(iter.TreeIter, nil, Ui.TreeView.Count()-1)
+	return iter
+}
+
+func (UiTreeView) Count() int {
+	return Ui.ListStore.IterNChildren(nil)
 }
 
 func (UiTreeView) Clear() {
