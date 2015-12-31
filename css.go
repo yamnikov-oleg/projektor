@@ -8,7 +8,7 @@ const CSS_CODE = `
     background-image: none;
     border: none;
     box-shadow: none;
-    font-size: 14pt;
+    font-size: 12pt;
   }
   GtkTreeView {
     background-color: transparent;
