@@ -56,12 +56,12 @@ func NewEntryFromDesktopFile(filepath string) (le *LaunchEntry, err error) {
 
 	le = &LaunchEntry{}
 	le.Name = section.Str("Name")
-	le.TabName = le.Name
 	le.LoCaseName = strings.ToLower(le.Name)
 	le.Icon = section.Str("Icon")
 
 	r := strings.NewReplacer(" %f", "", " %F", "", " %u", "", " %U", "")
 	le.Cmdline = r.Replace(section.Str("Exec"))
+	le.TabName = le.Cmdline
 
 	return
 }
