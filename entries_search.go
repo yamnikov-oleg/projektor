@@ -164,12 +164,8 @@ func SearchFileEntries(query string) LaunchEntriesList {
 		return nil
 	}
 
-	stat, statErr := os.Stat(path)
+	_, statErr := os.Stat(path)
 	if statErr != nil {
-		return nil
-	}
-
-	if !stat.IsDir() && (stat.Mode().Perm()&0111) != 0 {
 		return nil
 	}
 
