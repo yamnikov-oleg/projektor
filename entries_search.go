@@ -162,7 +162,7 @@ func SearchFileEntries(query string) (results LaunchEntriesList) {
 		return nil
 	}
 
-	_, statErr := os.Stat(queryPath)
+	stat, statErr := os.Stat(queryPath)
 	if statErr == nil {
 		entry, err := NewEntryForFile(queryPath, "<b>"+query+"</b>", query)
 		if err != nil {
@@ -174,13 +174,17 @@ func SearchFileEntries(query string) (results LaunchEntriesList) {
 
 	dirPath := queryPath
 	queryFileName := ""
-	if lastSlashInd := strings.LastIndex(queryPath, "/"); lastSlashInd >= 0 {
+	if statErr == nil && stat.IsDir() && !strings.HasSuffix(dirPath, "/") {
+		dirPath += "/"
+	} else if lastSlashInd := strings.LastIndex(queryPath, "/"); lastSlashInd >= 0 {
 		dirPath = queryPath[:lastSlashInd+1]
 		queryFileName = queryPath[lastSlashInd+1:]
 	}
 
 	displayDirPath := query
-	if lastSlashInd := strings.LastIndex(query, "/"); lastSlashInd >= 0 {
+	if statErr == nil && stat.IsDir() && !strings.HasSuffix(displayDirPath, "/") {
+		displayDirPath += "/"
+	} else if lastSlashInd := strings.LastIndex(query, "/"); lastSlashInd >= 0 {
 		displayDirPath = query[:lastSlashInd+1]
 	}
 
@@ -213,16 +217,7 @@ func SearchFileEntries(query string) (results LaunchEntriesList) {
 		}
 
 		tabFilePath := displayDirPath + name
-		if stat, err := os.Stat(filePath); err == nil && stat.IsDir() {
-			tabFilePath += "/"
-		}
-
-		var displayFilePath string
-		if queryFnLen == 0 {
-			displayFilePath = fmt.Sprintf("<b>.../%v</b>", name)
-		} else {
-			displayFilePath = fmt.Sprintf("<b>.../%v</b>%v", name[0:queryFnLen], name[queryFnLen:])
-		}
+		displayFilePath := fmt.Sprintf(".../<b>%v</b>%v", name[0:queryFnLen], name[queryFnLen:])
 
 		entry, err := NewEntryForFile(filePath, displayFilePath, tabFilePath)
 		if err != nil {
