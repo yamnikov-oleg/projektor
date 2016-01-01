@@ -24,19 +24,21 @@ func NewPathQuery(q string) (isPath bool, pq *PathQuery) {
 	}
 
 	pq.DirectoryPath = pq.QueryPath
+	pq.DirectorySubstring = pq.OriginalQuery
+
 	stat, err := os.Stat(pq.QueryPath)
+
 	if err == nil && stat.IsDir() && !strings.HasSuffix(pq.DirectoryPath, "/") {
 		pq.DirectoryPath += "/"
-	} else if ind := strings.LastIndex(pq.QueryPath, "/"); ind >= 0 {
-		pq.DirectoryPath = pq.QueryPath[:ind+1]
-		pq.Filename = pq.QueryPath[ind+1:]
-	}
-
-	pq.DirectorySubstring = pq.OriginalQuery
-	if err == nil && stat.IsDir() && !strings.HasSuffix(pq.DirectorySubstring, "/") {
 		pq.DirectorySubstring += "/"
-	} else if ind := strings.LastIndex(pq.OriginalQuery, "/"); ind >= 0 {
-		pq.DirectorySubstring = pq.OriginalQuery[:ind+1]
+	} else {
+		if ind := strings.LastIndex(pq.QueryPath, "/"); ind >= 0 {
+			pq.DirectoryPath = pq.QueryPath[:ind+1]
+			pq.Filename = pq.QueryPath[ind+1:]
+		}
+		if ind := strings.LastIndex(pq.OriginalQuery, "/"); ind >= 0 {
+			pq.DirectorySubstring = pq.OriginalQuery[:ind+1]
+		}
 	}
 
 	return
