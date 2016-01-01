@@ -40,6 +40,8 @@ func IndexAvailableCommands() {
 }
 
 func SearchCmdEntries(query string) (list LaunchEntriesList) {
+	query = ExpandEnvVars(query)
+
 	if query == "" {
 		return nil
 	}

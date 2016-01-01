@@ -86,6 +86,7 @@ func (pq *PathQuery) DirFilenames() ([]string, error) {
 }
 
 func SearchFileEntries(query string) (results LaunchEntriesList) {
+	query = ExpandEnvVars(query)
 	isPath, pq := NewPathQuery(query)
 	if !isPath {
 		return

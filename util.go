@@ -2,11 +2,26 @@ package main
 
 import (
 	"os"
+	"regexp"
 	"strings"
+)
+
+var (
+	EnvVarRegexp = regexp.MustCompile(`\$(\w+)`)
 )
 
 func EscapeAmpersand(s string) string {
 	return strings.Replace(s, "&", "&amp;", -1)
+}
+
+func ExpandEnvVars(query string) string {
+	matches := EnvVarRegexp.FindAllStringSubmatch(query, -1)
+	for _, match := range matches {
+		envVar := match[0]
+		cleanEnvVar := match[1]
+		query = strings.Replace(query, envVar, os.Getenv(cleanEnvVar), 1)
+	}
+	return query
 }
 
 func ExpandPathString(query string) (isPath bool, path string) {
