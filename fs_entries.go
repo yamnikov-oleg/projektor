@@ -7,67 +7,86 @@ import (
 	"strings"
 )
 
+type PathQuery struct {
+	OriginalQuery      string
+	QueryPath          string
+	DirectorySubstring string
+	DirectoryPath      string
+	Filename           string
+}
+
+func NewPathQuery(q string) (isPath bool, pq *PathQuery) {
+	pq = &PathQuery{OriginalQuery: q}
+
+	isPath, pq.QueryPath = ExpandPathString(q)
+	if !isPath {
+		return
+	}
+
+	pq.DirectoryPath = pq.QueryPath
+	stat, err := os.Stat(pq.QueryPath)
+	if err == nil && stat.IsDir() && !strings.HasSuffix(pq.DirectoryPath, "/") {
+		pq.DirectoryPath += "/"
+	} else if ind := strings.LastIndex(pq.QueryPath, "/"); ind >= 0 {
+		pq.DirectoryPath = pq.QueryPath[:ind+1]
+		pq.Filename = pq.QueryPath[ind+1:]
+	}
+
+	pq.DirectorySubstring = pq.OriginalQuery
+	if err == nil && stat.IsDir() && !strings.HasSuffix(pq.DirectorySubstring, "/") {
+		pq.DirectorySubstring += "/"
+	} else if ind := strings.LastIndex(pq.OriginalQuery, "/"); ind >= 0 {
+		pq.DirectorySubstring = pq.OriginalQuery[:ind+1]
+	}
+
+	return
+}
+
 func SearchFileEntries(query string) (results LaunchEntriesList) {
-	isPath, queryPath := ExpandPathString(query)
+	isPath, pq := NewPathQuery(query)
 	if !isPath {
 		return nil
 	}
 
-	stat, statErr := os.Stat(queryPath)
+	stat, statErr := os.Stat(pq.QueryPath)
 	if statErr == nil && !IsExecutable(stat) {
-		entry, err := NewEntryForFile(queryPath, "<b>"+query+"</b>", query)
+		entry, err := NewEntryForFile(pq.QueryPath, "<b>"+query+"</b>", query)
 		if err != nil {
-			errduring("making file entry `%v`", err, "Skipping it", queryPath)
+			errduring("making file entry `%v`", err, "Skipping it", pq.QueryPath)
 		} else {
 			results = append(results, entry)
 		}
 	}
 
-	dirPath := queryPath
-	queryFileName := ""
-	if statErr == nil && stat.IsDir() && !strings.HasSuffix(dirPath, "/") {
-		dirPath += "/"
-	} else if lastSlashInd := strings.LastIndex(queryPath, "/"); lastSlashInd >= 0 {
-		dirPath = queryPath[:lastSlashInd+1]
-		queryFileName = queryPath[lastSlashInd+1:]
-	}
-
-	displayDirPath := query
-	if statErr == nil && stat.IsDir() && !strings.HasSuffix(displayDirPath, "/") {
-		displayDirPath += "/"
-	} else if lastSlashInd := strings.LastIndex(query, "/"); lastSlashInd >= 0 {
-		displayDirPath = query[:lastSlashInd+1]
-	}
-
-	dir, err := os.Open(dirPath)
+	dir, err := os.Open(pq.DirectoryPath)
 	if err != nil {
-		errduring("opening dir `%v`", err, "Skipping it", dirPath)
+		errduring("opening dir `%v`", err, "Skipping it", pq.DirectoryPath)
 		return
 	}
 	dirStat, err := dir.Stat()
 	if err != nil || !dirStat.IsDir() {
-		errduring("retrieving dir stat `%v`", err, "Skipping it", dirPath)
+		errduring("retrieving dir stat `%v`", err, "Skipping it", pq.DirectoryPath)
 		return
 	}
 	filenames, err := dir.Readdirnames(-1)
 	if err != nil {
-		errduring("retrieving dirnames `%v`", err, "Skipping it", dirPath)
+		errduring("retrieving dirnames `%v`", err, "Skipping it", pq.DirectoryPath)
 	}
 
 	sort.Strings(filenames)
 
-	queryFnLen := len(queryFileName)
+	queryFnLen := len(pq.Filename)
 	for _, name := range filenames {
-		if !strings.HasPrefix(name, queryFileName) {
+		if !strings.HasPrefix(name, pq.Filename) {
 			continue
 		}
 
-		filePath := dirPath + name
-		if filePath == queryPath {
+		filePath := pq.DirectoryPath + name
+		if filePath == pq.QueryPath {
 			continue
 		}
 
-		tabFilePath := displayDirPath + name
+		tabFilePath := pq.DirectorySubstring + name
 		if stat, err := os.Stat(filePath); err == nil && stat.IsDir() {
 			tabFilePath += "/"
 		}
