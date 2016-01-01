@@ -44,20 +44,33 @@ func NewPathQuery(q string) (isPath bool, pq *PathQuery) {
 	return
 }
 
+func (pq *PathQuery) MakeLaunchEntry() (*LaunchEntry, error) {
+	stat, err := os.Stat(pq.QueryPath)
+	if err != nil {
+		return nil, err
+	}
+	if IsExecutable(stat) {
+		return nil, fmt.Errorf("`%v` is executable", pq.OriginalQuery)
+	}
+
+	entry, err := NewEntryForFile(pq.QueryPath, "<b>"+pq.OriginalQuery+"</b>", pq.OriginalQuery)
+	if err != nil {
+		return nil, err
+	}
+
+	return entry, nil
+}
+
 func SearchFileEntries(query string) (results LaunchEntriesList) {
 	isPath, pq := NewPathQuery(query)
 	if !isPath {
 		return nil
 	}
 
-	stat, statErr := os.Stat(pq.QueryPath)
-	if statErr == nil && !IsExecutable(stat) {
-		entry, err := NewEntryForFile(pq.QueryPath, "<b>"+query+"</b>", query)
-		if err != nil {
-			errduring("making file entry `%v`", err, "Skipping it", pq.QueryPath)
-		} else {
-			results = append(results, entry)
-		}
+	if entry, err := pq.MakeLaunchEntry(); err != nil {
+		errduring("making file entry `%v`", err, "Skipping it", pq.QueryPath)
+	} else {
+		results = append(results, entry)
 	}
 
 	dir, err := os.Open(pq.DirectoryPath)
