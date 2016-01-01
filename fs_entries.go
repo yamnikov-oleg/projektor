@@ -104,26 +104,25 @@ func SearchFileEntries(query string) (results LaunchEntriesList) {
 	}
 	sort.Strings(filenames)
 
-	queryFnLen := len(pq.Filename)
+	qflen := len(pq.Filename)
 	for _, name := range filenames {
 		if !strings.HasPrefix(name, pq.Filename) {
 			continue
 		}
-
-		filePath := pq.DirectoryPath + name
-		if filePath == pq.QueryPath {
+		if name == pq.Filename {
 			continue
 		}
 
-		tabFilePath := pq.DirectorySubstring + name
-		if stat, err := os.Stat(filePath); err == nil && stat.IsDir() {
-			tabFilePath += "/"
+		path := pq.DirectoryPath + name
+		tabPath := pq.DirectorySubstring + name
+		if stat, err := os.Stat(path); err == nil && stat.IsDir() {
+			tabPath += "/"
 		}
-		displayFilePath := fmt.Sprintf(".../<b>%v</b>%v", name[0:queryFnLen], name[queryFnLen:])
+		displayPath := fmt.Sprintf(".../<b>%v</b>%v", name[0:qflen], name[qflen:])
 
-		entry, err := NewEntryForFile(filePath, displayFilePath, tabFilePath)
+		entry, err := NewEntryForFile(path, displayPath, tabPath)
 		if err != nil {
-			errduring("file entry addition `%v`", err, "Skipping it", filePath)
+			errduring("file entry addition `%v`", err, "Skipping it", path)
 			continue
 		}
 		results = append(results, entry)
