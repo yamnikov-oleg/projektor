@@ -16,7 +16,7 @@ Fast application launcher for Gnome written in Go
 * Install gtk+-3.0 development files
 * Install latest version of Golang from https://golang.org
 * ```go get github.com/yamnikov-oleg/projektor```
-* Make sure ```&GOPATH/bin``` is appended to ```&PATH```
+* Make sure ```$GOPATH/bin``` is appended to ```$PATH```
 * Done.
 
 ## Usage
