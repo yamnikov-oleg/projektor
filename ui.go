@@ -11,6 +11,7 @@ import (
 	"github.com/yamnikov-oleg/go-gtk/gio"
 	"github.com/yamnikov-oleg/go-gtk/glib"
 	"github.com/yamnikov-oleg/go-gtk/gtk"
+	"github.com/yamnikov-oleg/go-gtk/pango"
 )
 
 var Ui struct {
@@ -291,10 +292,12 @@ func SetupUi() {
 	// TreeView
 	//
 	Ui.TreeView.SetHeadersVisible(false)
-	cr := gtk.NewCellRendererPixbuf()
-	glib.ObjectFromNative(unsafe.Pointer(cr.ToCellRenderer())).Set("stock-size", int(gtk.ICON_SIZE_DIALOG))
-	Ui.TreeView.AppendColumn(gtk.NewTreeViewColumnWithAttributes2("Icon", cr, "gicon", 0))
-	Ui.TreeView.AppendColumn(gtk.NewTreeViewColumnWithAttributes("Id", gtk.NewCellRendererText(), "markup", 1))
+	crp := gtk.NewCellRendererPixbuf()
+	glib.ObjectFromNative(unsafe.Pointer(crp.ToCellRenderer())).Set("stock-size", int(gtk.ICON_SIZE_DIALOG))
+	Ui.TreeView.AppendColumn(gtk.NewTreeViewColumnWithAttributes2("Icon", crp, "gicon", 0))
+	crt := gtk.NewCellRendererText()
+	glib.ObjectFromNative(unsafe.Pointer(crt.ToCellRenderer())).Set("ellipsize", int(pango.ELLIPSIZE_START))
+	Ui.TreeView.AppendColumn(gtk.NewTreeViewColumnWithAttributes("Id", crt, "markup", 1))
 	Ui.TreeView.SetModel(Ui.ListStore)
 	Ui.TreeView.Connect("row-activated", Ui.TreeView.OnRowActivated)
 
