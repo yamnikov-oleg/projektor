@@ -20,5 +20,6 @@ func errduring(action string, err error, nextmove string, a ...interface{}) {
 	if nextmove != "" {
 		line += nextmove + "\n"
 	}
+	line += "\n"
 	logf(line, a...)
 }
