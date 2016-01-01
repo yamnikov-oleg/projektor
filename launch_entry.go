@@ -70,7 +70,7 @@ func NewEntryFromCommand(command string) *LaunchEntry {
 	return &LaunchEntry{
 		Icon:       "application-default-icon",
 		Name:       command,
-		MarkupName: "<b>" + command + "</b>",
+		MarkupName: "<b>" + EscapeAmpersand(command) + "</b>",
 		TabName:    command,
 		Cmdline:    command,
 	}
@@ -85,7 +85,7 @@ func NewEntryForFile(path string, displayName string, tabName string) (*LaunchEn
 	icon := gFileInfo.GetIcon()
 	return &LaunchEntry{
 		Icon:       icon.ToString(),
-		MarkupName: displayName,
+		MarkupName: EscapeAmpersand(displayName),
 		TabName:    tabName,
 		Cmdline:    "xdg-open " + path,
 	}, nil
