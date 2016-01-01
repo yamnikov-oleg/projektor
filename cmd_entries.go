@@ -44,41 +44,47 @@ func SearchCmdEntries(query string) (list LaunchEntriesList) {
 		return nil
 	}
 
-	isPath, path := ExpandPathString(query)
-	queryLength := len(query)
-	if !isPath {
-		firstEntry := NewEntryFromCommand(query)
-		firstEntry.QueryIndex = -1
-		list = append(list, firstEntry)
+	queryCmd := query
+	if ind := strings.Index(query, " "); ind > 0 {
+		queryCmd = query[:ind]
+	}
+	isPath, path := ExpandPathString(queryCmd)
 
-		for _, cmd := range AvailableCommands {
-			if cmd == "" {
-				continue
-			}
-			if cmd == query {
-				continue
-			}
-
-			ind := strings.Index(cmd, query)
-			if ind < 0 {
-				continue
-			}
-
-			entry := NewEntryFromCommand(cmd)
-			entry.QueryIndex = ind
-			entry.UpdateMarkupName(ind, queryLength)
-			list = append(list, entry)
+	if isPath {
+		if stat, err := os.Stat(path); err != nil || !IsExecutable(stat) {
+			return nil
 		}
-		list.SortByIndex()
+	}
+
+	list = append(list, NewEntryFromCommand(query))
+	list[0].QueryIndex = -1
+
+	if isPath {
+		// Nothing to do else
+		// command lookup below
 		return
-		//return LaunchEntriesList{NewEntryFromCommand(query)}
 	}
 
-	stat, statErr := os.Stat(path)
-	// not exists OR is a directory OR is not executable
-	if statErr != nil || !IsExecutable(stat) {
-		return nil
-	}
+	qlen := len(query)
+	for _, cmd := range AvailableCommands {
+		if cmd == "" {
+			continue
+		}
+		if cmd == query {
+			continue
+		}
 
-	return LaunchEntriesList{NewEntryFromCommand(query)}
+		ind := strings.Index(cmd, query)
+		if ind < 0 {
+			continue
+		}
+
+		entry := NewEntryFromCommand(cmd)
+		entry.QueryIndex = ind
+		entry.UpdateMarkupName(ind, qlen)
+		list = append(list, entry)
+	}
+	list.SortByIndex()
+
+	return
 }
