@@ -3,6 +3,7 @@ package main
 import (
 	"os"
 	"os/exec"
+	"runtime"
 	"strings"
 	"unsafe"
 
@@ -234,6 +235,10 @@ func UpdateSearchResults() {
 	}
 
 	Ui.TreeView.First().Select()
+}
+
+func init() {
+	runtime.LockOSThread()
 }
 
 func SetupUi() {

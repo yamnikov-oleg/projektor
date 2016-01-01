@@ -69,7 +69,8 @@ func NewEntryFromDesktopFile(filepath string) (le *LaunchEntry, err error) {
 func NewEntryFromCommand(command string) *LaunchEntry {
 	return &LaunchEntry{
 		Icon:       "application-default-icon",
-		MarkupName: fmt.Sprintf("\u2192 <b>%v</b>", command),
+		Name:       command,
+		MarkupName: "<b>" + command + "</b>",
 		TabName:    command,
 		Cmdline:    command,
 	}

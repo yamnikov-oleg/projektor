@@ -156,6 +156,13 @@ func ExpandQueryPath(query string) (isPath bool, path string) {
 	return
 }
 
+func IsExecutable(info os.FileInfo) bool {
+	if info == nil || info.IsDir() || (info.Mode().Perm()&0111) == 0 {
+		return false
+	}
+	return true
+}
+
 func SearchFileEntries(query string) (results LaunchEntriesList) {
 	isPath, queryPath := ExpandQueryPath(query)
 	if !isPath {
@@ -163,7 +170,7 @@ func SearchFileEntries(query string) (results LaunchEntriesList) {
 	}
 
 	stat, statErr := os.Stat(queryPath)
-	if statErr == nil && (stat.IsDir() || (stat.Mode().Perm()&0111) == 0) {
+	if statErr == nil && !IsExecutable(stat) {
 		entry, err := NewEntryForFile(queryPath, "<b>"+query+"</b>", query)
 		if err != nil {
 			errduring("making file entry `%v`", err, "Skipping it", queryPath)
@@ -216,7 +223,10 @@ func SearchFileEntries(query string) (results LaunchEntriesList) {
 			continue
 		}
 
-		tabFilePath := displayDirPath + name + "/"
+		tabFilePath := displayDirPath + name
+		if stat, err := os.Stat(filePath); err == nil && stat.IsDir() {
+			tabFilePath += "/"
+		}
 		displayFilePath := fmt.Sprintf(".../<b>%v</b>%v", name[0:queryFnLen], name[queryFnLen:])
 
 		entry, err := NewEntryForFile(filePath, displayFilePath, tabFilePath)
@@ -230,19 +240,76 @@ func SearchFileEntries(query string) (results LaunchEntriesList) {
 	return
 }
 
-func SearchCmdEntries(query string) LaunchEntriesList {
+var AvailableCommands []string
+
+func GetAllExecutablesFromDir(dir string) (execs []string) {
+	fd, err := os.Open(dir)
+	if err != nil {
+		errduring("path directory `%v` open", err, "Skipping it", dir)
+		return
+	}
+	defer fd.Close()
+
+	filenames, err := fd.Readdirnames(-1)
+	if err != nil {
+		errduring("path directory `%v` filenames reading", err, "Skipping it", dir)
+		return
+	}
+
+	for _, fname := range filenames {
+		if stat, err := os.Stat(dir + "/" + fname); err == nil && IsExecutable(stat) {
+			execs = append(execs, fname)
+		}
+	}
+	return
+}
+
+func IndexAvailableCommands() {
+	paths := strings.Split(os.Getenv("PATH"), fmt.Sprintf("%c", os.PathListSeparator))
+	for _, pathDir := range paths {
+		AvailableCommands = append(AvailableCommands, GetAllExecutablesFromDir(pathDir)...)
+	}
+	sort.Strings(AvailableCommands)
+}
+
+func SearchCmdEntries(query string) (list LaunchEntriesList) {
 	if query == "" {
 		return nil
 	}
 
 	isPath, path := ExpandQueryPath(query)
+	queryLength := len(query)
 	if !isPath {
-		return LaunchEntriesList{NewEntryFromCommand(query)}
+		firstEntry := NewEntryFromCommand(query)
+		firstEntry.QueryIndex = -1
+		list = append(list, firstEntry)
+
+		for _, cmd := range AvailableCommands {
+			if cmd == "" {
+				continue
+			}
+			if cmd == query {
+				continue
+			}
+
+			ind := strings.Index(cmd, query)
+			if ind < 0 {
+				continue
+			}
+
+			entry := NewEntryFromCommand(cmd)
+			entry.QueryIndex = ind
+			entry.UpdateMarkupName(ind, queryLength)
+			list = append(list, entry)
+		}
+		list.SortByIndex()
+		return
+		//return LaunchEntriesList{NewEntryFromCommand(query)}
 	}
 
 	stat, statErr := os.Stat(path)
 	// not exists OR is a directory OR is not executable
-	if statErr != nil || stat.IsDir() || (stat.Mode().Perm()&0111) == 0 {
+	if statErr != nil || !IsExecutable(stat) {
 		return nil
 	}
 
