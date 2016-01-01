@@ -61,10 +61,34 @@ func (pq *PathQuery) MakeLaunchEntry() (*LaunchEntry, error) {
 	return entry, nil
 }
 
+func (pq *PathQuery) DirFilenames() ([]string, error) {
+	dir, err := os.Open(pq.DirectoryPath)
+	if err != nil {
+		return nil, err
+	}
+	defer dir.Close()
+
+	stat, err := dir.Stat()
+	if err != nil {
+		return nil, err
+	}
+
+	if !stat.IsDir() {
+		return nil, fmt.Errorf("`%v` is not a directory", pq.DirectoryPath)
+	}
+
+	filenames, err := dir.Readdirnames(-1)
+	if err != nil {
+		return nil, err
+	}
+
+	return filenames, nil
+}
+
 func SearchFileEntries(query string) (results LaunchEntriesList) {
 	isPath, pq := NewPathQuery(query)
 	if !isPath {
-		return nil
+		return
 	}
 
 	if entry, err := pq.MakeLaunchEntry(); err != nil {
@@ -73,21 +97,11 @@ func SearchFileEntries(query string) (results LaunchEntriesList) {
 		results = append(results, entry)
 	}
 
-	dir, err := os.Open(pq.DirectoryPath)
+	filenames, err := pq.DirFilenames()
 	if err != nil {
-		errduring("opening dir `%v`", err, "Skipping it", pq.DirectoryPath)
+		errduring("retrieving dir `%v` filenames", err, "No file entries are retrieved", pq.DirectoryPath)
 		return
 	}
-	dirStat, err := dir.Stat()
-	if err != nil || !dirStat.IsDir() {
-		errduring("retrieving dir stat `%v`", err, "Skipping it", pq.DirectoryPath)
-		return
-	}
-	filenames, err := dir.Readdirnames(-1)
-	if err != nil {
-		errduring("retrieving dirnames `%v`", err, "Skipping it", pq.DirectoryPath)
-	}
-
 	sort.Strings(filenames)
 
 	queryFnLen := len(pq.Filename)
