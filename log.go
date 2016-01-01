@@ -2,8 +2,8 @@ package main
 
 import "fmt"
 
-const (
-	Verbose = true
+var (
+	Verbose = false
 )
 
 func logf(format string, a ...interface{}) {
