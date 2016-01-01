@@ -94,6 +94,7 @@ func SearchFileEntries(query string) (results LaunchEntriesList) {
 	if entry, err := pq.MakeLaunchEntry(); err != nil {
 		errduring("making file entry `%v`", err, "Skipping it", pq.QueryPath)
 	} else {
+		entry.QueryIndex = -1
 		results = append(results, entry)
 	}
 
@@ -114,8 +115,12 @@ func SearchFileEntries(query string) (results LaunchEntriesList) {
 		}
 
 		path := pq.DirectoryPath + name
-		tabPath := pq.DirectorySubstring + name
+		isDir := false
 		if stat, err := os.Stat(path); err == nil && stat.IsDir() {
+			isDir = true
+		}
+		tabPath := pq.DirectorySubstring + name
+		if isDir {
 			tabPath += "/"
 		}
 		displayPath := fmt.Sprintf(".../<b>%v</b>%v", name[0:qflen], name[qflen:])
@@ -125,8 +130,12 @@ func SearchFileEntries(query string) (results LaunchEntriesList) {
 			errduring("file entry addition `%v`", err, "Skipping it", path)
 			continue
 		}
+		if !isDir {
+			entry.QueryIndex = 1
+		}
 		results = append(results, entry)
 	}
 
+	results.SortByIndex()
 	return
 }
