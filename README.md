@@ -1,13 +1,15 @@
 # projektor
 Fast application launcher for Gnome written in Go
 
-![Screenshot](/screenshots/01.png?raw=true)
+![Screenshot](/screenshots/02.png?raw=true)
 
 ## Features
 
+* [Demo video](https://youtu.be/-i69v6F41ps)
 * Search and launch applications installed on your system
-* Navigate through file system and open directories and files via ```xdg-open```
+* Navigate through file system using Tab key, open directories and files
 * Execute custom command lines
+* Open urls in the default web browser
 
 ## Building
 
@@ -20,11 +22,3 @@ Fast application launcher for Gnome written in Go
 ## Usage
 
 Start ```projektor``` from console. Best practice would be to bind the command to a key shortcut (e.g. ```Super+Q```) using some utility.
-
-* Navigate through launch entries using mouse wheel or arrow keys.
-* Use top text box for searching.
-* Press enter or double-click an entry to launch it.
-* Start typing a path to navigate file system.
-* Press Tab to insert selected entry's command line into the text box.
-* Type any command line then select appropriate launch entry to execute the command.
-* Press escape, click outside the window or start ```projektor``` again to close projektor window.
