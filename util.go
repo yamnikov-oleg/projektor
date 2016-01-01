@@ -7,7 +7,8 @@ import (
 )
 
 var (
-	EnvVarRegexp = regexp.MustCompile(`\$(\w+)`)
+	EnvVarRegexp    = regexp.MustCompile(`\$(\w+)`)
+	UrlSchemaRegexp = regexp.MustCompile(`\w+://`)
 )
 
 func EscapeAmpersand(s string) string {
@@ -43,6 +44,17 @@ func ExpandPathString(query string) (isPath bool, path string) {
 
 func IsExecutable(info os.FileInfo) bool {
 	if info == nil || info.IsDir() || (info.Mode().Perm()&0111) == 0 {
+		return false
+	}
+	return true
+}
+
+func IsUrl(query string) bool {
+	inds := UrlSchemaRegexp.FindStringIndex(query)
+	if len(inds) == 0 {
+		return false
+	}
+	if inds[0] != 0 {
 		return false
 	}
 	return true

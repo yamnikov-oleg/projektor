@@ -45,6 +45,9 @@ func SearchCmdEntries(query string) (list LaunchEntriesList) {
 	if query == "" {
 		return nil
 	}
+	if IsUrl(query) {
+		return nil
+	}
 
 	queryCmd := query
 	if ind := strings.Index(query, " "); ind > 0 {

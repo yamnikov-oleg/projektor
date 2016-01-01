@@ -91,6 +91,15 @@ func NewEntryForFile(path string, displayName string, tabName string) (*LaunchEn
 	}, nil
 }
 
+func NewUrlLaunchEntry(url string) *LaunchEntry {
+	return &LaunchEntry{
+		Icon:       "web-browser",
+		MarkupName: EscapeAmpersand(url),
+		TabName:    url,
+		Cmdline:    "xdg-open " + url,
+	}
+}
+
 func (le *LaunchEntry) UpdateMarkupName(index, length int) {
 	index2 := index + length
 	le.MarkupName = EscapeAmpersand(

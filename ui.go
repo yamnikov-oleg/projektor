@@ -228,6 +228,7 @@ func UpdateSearchResults() {
 
 	searchFuncs := []EntrySearchFunc{
 		SearchAppEntries,
+		SearchUrlEntries,
 		SearchCmdEntries,
 		SearchFileEntries,
 	}
