@@ -11,7 +11,17 @@ import (
 	"github.com/yamnikov-oleg/projektor/conf"
 )
 
+type EntryType int
+
+const (
+	ApplicatioEntry EntryType = iota
+	CommandlineEntry
+	FileEntry
+	UrlEntry
+)
+
 type LaunchEntry struct {
+	Type EntryType
 	// Clean name for an entry. E.g. "Atom Text Editor"
 	Name string
 	// Same as Name, but lowercased, e.g. "atom text editor"
@@ -54,7 +64,7 @@ func NewEntryFromDesktopFile(filepath string) (le *LaunchEntry, err error) {
 		return nil, errors.New("desktop entry is hidden on current desktop")
 	}
 
-	le = &LaunchEntry{}
+	le = &LaunchEntry{Type: ApplicatioEntry}
 	le.Name = section.Str("Name")
 	le.LoCaseName = strings.ToLower(le.Name)
 	le.Icon = section.Str("Icon")
@@ -68,9 +78,10 @@ func NewEntryFromDesktopFile(filepath string) (le *LaunchEntry, err error) {
 
 func NewEntryFromCommand(command string) *LaunchEntry {
 	return &LaunchEntry{
+		Type:       CommandlineEntry,
 		Icon:       "application-default-icon",
 		Name:       command,
-		MarkupName: "<b>" + EscapeAmpersand(command) + "</b>",
+		MarkupName: "\u2192 <b>" + EscapeAmpersand(command) + "</b>",
 		TabName:    command,
 		Cmdline:    command,
 	}
@@ -84,6 +95,7 @@ func NewEntryForFile(path string, displayName string, tabName string) (*LaunchEn
 
 	icon := gFileInfo.GetIcon()
 	return &LaunchEntry{
+		Type:       FileEntry,
 		Icon:       icon.ToString(),
 		MarkupName: EscapeAmpersand(displayName),
 		TabName:    tabName,
@@ -93,6 +105,7 @@ func NewEntryForFile(path string, displayName string, tabName string) (*LaunchEn
 
 func NewUrlLaunchEntry(url string) *LaunchEntry {
 	return &LaunchEntry{
+		Type:       UrlEntry,
 		Icon:       "web-browser",
 		MarkupName: EscapeAmpersand(url),
 		TabName:    url,
@@ -109,6 +122,9 @@ func (le *LaunchEntry) UpdateMarkupName(index, length int) {
 			le.Name[index2:],
 		),
 	)
+	if le.Type == CommandlineEntry {
+		le.MarkupName = "\u2192 " + le.MarkupName
+	}
 }
 
 type LaunchEntriesList []*LaunchEntry
