@@ -107,8 +107,10 @@ func SearchFileEntries(query string) (results LaunchEntriesList) {
 	sort.Strings(filenames)
 
 	qflen := len(pq.Filename)
+	pqLoaseFilename := strings.ToLower(pq.Filename)
 	for _, name := range filenames {
-		if !strings.HasPrefix(name, pq.Filename) {
+		lcname := strings.ToLower(name)
+		if !strings.HasPrefix(lcname, pqLoaseFilename) {
 			continue
 		}
 		if name == pq.Filename {
