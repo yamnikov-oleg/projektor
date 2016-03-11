@@ -1,10 +1,17 @@
 package main
 
-import "fmt"
+import (
+	"flag"
+	"fmt"
+)
 
 var (
-	Verbose = false
+	Verbose bool
 )
+
+func init() {
+	flag.BoolVar(&Verbose, "v", false, "Verbose output")
+}
 
 func logf(format string, a ...interface{}) {
 	if Verbose {
