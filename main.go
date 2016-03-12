@@ -7,6 +7,7 @@ import (
 	"log"
 	"os"
 	"os/exec"
+	"runtime/pprof"
 
 	"github.com/BurntSushi/xgbutil"
 	"github.com/BurntSushi/xgbutil/keybind"
@@ -18,10 +19,13 @@ var (
 
 	SIFlag         = "inst"
 	SingleInstance bool
+
+	CPUProfile string
 )
 
 func init() {
 	flag.BoolVar(&SingleInstance, SIFlag, false, "Run an instance of projektor, not a daemon")
+	flag.StringVar(&CPUProfile, "cpuprofile", "", "Run CPU profiling and output results to the `file`")
 }
 
 func RunInstance() {
@@ -62,6 +66,18 @@ func RunDaemon() {
 
 func main() {
 	flag.Parse()
+
+	if CPUProfile != "" {
+		f, err := os.Create(CPUProfile)
+		if err != nil {
+			panic(err)
+		}
+		defer f.Close()
+
+		pprof.StartCPUProfile(f)
+		defer pprof.StopCPUProfile()
+	}
+
 	if SingleInstance {
 		RunInstance()
 	} else {
