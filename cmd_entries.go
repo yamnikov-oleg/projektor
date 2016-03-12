@@ -33,8 +33,16 @@ func GetAllExecutablesFromDir(dir string) (execs []string) {
 
 func IndexAvailableCommands() {
 	paths := strings.Split(os.Getenv("PATH"), fmt.Sprintf("%c", os.PathListSeparator))
+	cmdmap := map[string]struct{}{}
 	for _, pathDir := range paths {
-		AvailableCommands = append(AvailableCommands, GetAllExecutablesFromDir(pathDir)...)
+		execs := GetAllExecutablesFromDir(pathDir)
+		for _, e := range execs {
+			cmdmap[e] = struct{}{}
+		}
+	}
+	AvailableCommands = nil
+	for exec := range cmdmap {
+		AvailableCommands = append(AvailableCommands, exec)
 	}
 	sort.Strings(AvailableCommands)
 }
