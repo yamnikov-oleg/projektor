@@ -94,10 +94,6 @@ func NewEntryForFile(path string, displayName string, tabName string) (*LaunchEn
 		return nil, fiErr
 	}
 
-	// Remove all trailing slashes
-	path = strings.TrimRight(path, fmt.Sprintf("%c", os.PathSeparator))
-	tabName = strings.TrimRight(tabName, fmt.Sprintf("%c", os.PathSeparator))
-
 	icon := gFileInfo.GetIcon()
 	return &LaunchEntry{
 		Type:       FileEntry,
