@@ -90,13 +90,29 @@ func (iter UiTreeIter) None() bool {
 	return iter.TreeIter == nil
 }
 
-func (iter UiTreeIter) TabName() string {
+func (iter UiTreeIter) GetStr(i int) string {
 	if iter.None() {
 		return ""
 	}
 	var val glib.GValue
-	Ui.ListStore.GetValue(iter.TreeIter, 3, &val)
+	Ui.ListStore.GetValue(iter.TreeIter, i, &val)
 	return val.GetString()
+}
+
+func (iter UiTreeIter) MarkupName() string {
+	return iter.GetStr(1)
+}
+func (iter UiTreeIter) Cmdline() string {
+	return iter.GetStr(2)
+}
+func (iter UiTreeIter) TabName() string {
+	return iter.GetStr(3)
+}
+func (iter UiTreeIter) Name() string {
+	return iter.GetStr(4)
+}
+func (iter UiTreeIter) IconName() string {
+	return iter.GetStr(5)
 }
 
 func (iter UiTreeIter) Execute() {
@@ -107,6 +123,12 @@ func (iter UiTreeIter) Execute() {
 	Ui.ListStore.GetValue(iter.TreeIter, 2, &val)
 	cmd := strings.Fields(val.GetString())
 	exec.Command(cmd[0], cmd[1:]...).Start()
+	MakeHistRecord(HistRecord{
+		Name:    iter.Name(),
+		TabName: iter.TabName(),
+		Icon:    iter.IconName(),
+		Cmdline: iter.Cmdline(),
+	})
 	gtk.MainQuit()
 }
 
@@ -208,6 +230,8 @@ func (UiTreeView) AppendLaunchEntry(entry *LaunchEntry) {
 		1, entry.MarkupName,
 		2, entry.Cmdline,
 		3, entry.TabName,
+		4, entry.Name,
+		5, entry.Icon,
 	)
 }
 
@@ -227,6 +251,7 @@ func UpdateSearchResults() {
 	text := strings.TrimSpace(Ui.SearchEntry.GetText())
 
 	searchFuncs := []EntrySearchFunc{
+		SearchHistEntries,
 		SearchAppEntries,
 		SearchUrlEntries,
 		SearchCmdEntries,
@@ -256,9 +281,11 @@ func SetupUi() {
 	Ui.TreeView = UiTreeView{gtk.NewTreeView()}
 	Ui.ListStore = gtk.NewListStore(
 		gio.GetIconType(),  // Icon
-		glib.G_TYPE_STRING, // Name
+		glib.G_TYPE_STRING, // MarkupName
 		glib.G_TYPE_STRING, // Cmdline
 		glib.G_TYPE_STRING, // TabName
+		glib.G_TYPE_STRING, // Name
+		glib.G_TYPE_STRING, // IconName
 	)
 	Ui.Pointer = UiPointer{gdk.GetDefaultDisplay().GetDeviceManager().GetClientPointer()}
 

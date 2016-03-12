@@ -18,6 +18,7 @@ const (
 	CommandlineEntry
 	FileEntry
 	UrlEntry
+	HistEntry
 )
 
 type LaunchEntry struct {
@@ -93,10 +94,15 @@ func NewEntryForFile(path string, displayName string, tabName string) (*LaunchEn
 		return nil, fiErr
 	}
 
+	// Remove all trailing slashes
+	path = strings.TrimRight(path, fmt.Sprintf("%c", os.PathSeparator))
+	tabName = strings.TrimRight(tabName, fmt.Sprintf("%c", os.PathSeparator))
+
 	icon := gFileInfo.GetIcon()
 	return &LaunchEntry{
 		Type:       FileEntry,
 		Icon:       icon.ToString(),
+		Name:       path,
 		MarkupName: EscapeAmpersand(displayName),
 		TabName:    tabName,
 		Cmdline:    "xdg-open " + path,
@@ -107,6 +113,7 @@ func NewUrlLaunchEntry(url string) *LaunchEntry {
 	return &LaunchEntry{
 		Type:       UrlEntry,
 		Icon:       "web-browser",
+		Name:       url,
 		MarkupName: EscapeAmpersand(url),
 		TabName:    url,
 		Cmdline:    "xdg-open " + url,
@@ -124,6 +131,9 @@ func (le *LaunchEntry) UpdateMarkupName(index, length int) {
 	)
 	if le.Type == CommandlineEntry {
 		le.MarkupName = "\u2192 " + le.MarkupName
+	}
+	if le.Type == HistEntry {
+		le.MarkupName = "\u231a " + le.MarkupName
 	}
 }
 

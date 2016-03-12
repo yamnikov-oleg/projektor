@@ -15,7 +15,8 @@ import (
 )
 
 var (
-	HOME = os.Getenv("HOME")
+	HOME   = os.Getenv("HOME")
+	AppDir = HOME + "/.projektor"
 
 	SIFlag         = "inst"
 	SingleInstance bool
@@ -31,6 +32,7 @@ func init() {
 func RunInstance() {
 	logf("Running single instance of projektor\n")
 
+	LoadHistory()
 	IndexDesktopEntries()
 	IndexAvailableCommands()
 	SetupUi()

@@ -119,12 +119,19 @@ func (ei *EntriesIterator) Entry() *LaunchEntry {
 }
 
 func SearchAppEntries(query string) LaunchEntriesList {
+	if query == "" {
+		return nil
+	}
+
 	loQuery := strings.ToLower(query)
 	results := LaunchEntriesList{}
 
 	iterator := NewEntriesInterator(ApplicationEntries)
 	for iterator.Next() {
 		entry := iterator.Entry()
+		if IsInHistory(entry.Cmdline) {
+			continue
+		}
 		index := strings.Index(entry.LoCaseName, loQuery)
 		if index != -1 {
 			entry.QueryIndex = index

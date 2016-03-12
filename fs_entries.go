@@ -94,7 +94,7 @@ func SearchFileEntries(query string) (results LaunchEntriesList) {
 
 	if entry, err := pq.MakeLaunchEntry(); err != nil {
 		errduring("making file entry `%v`", err, "Skipping it", pq.QueryPath)
-	} else {
+	} else if !IsInHistory(entry.Cmdline) {
 		entry.QueryIndex = -1
 		results = append(results, entry)
 	}

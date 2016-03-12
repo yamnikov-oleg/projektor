@@ -61,8 +61,10 @@ func SearchCmdEntries(query string) (list LaunchEntriesList) {
 		}
 	}
 
-	list = append(list, NewEntryFromCommand(query))
-	list[0].QueryIndex = -1
+	if !IsInHistory(query) {
+		list = append(list, NewEntryFromCommand(query))
+		list[0].QueryIndex = -1
+	}
 
 	if isPath {
 		// Nothing to do else
@@ -81,6 +83,10 @@ func SearchCmdEntries(query string) (list LaunchEntriesList) {
 
 		ind := strings.Index(cmd, query)
 		if ind < 0 {
+			continue
+		}
+
+		if IsInHistory(cmd) {
 			continue
 		}
 

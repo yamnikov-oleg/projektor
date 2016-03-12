@@ -4,5 +4,9 @@ func SearchUrlEntries(query string) LaunchEntriesList {
 	if !IsUrl(query) {
 		return nil
 	}
-	return LaunchEntriesList{NewUrlLaunchEntry(query)}
+	entry := NewUrlLaunchEntry(query)
+	if IsInHistory(entry.Cmdline) {
+		return nil
+	}
+	return LaunchEntriesList{entry}
 }
