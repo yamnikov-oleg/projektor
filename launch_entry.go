@@ -179,10 +179,3 @@ func (list lelSortableByIndex) Swap(i, j int) {
 }
 
 type EntrySearchFunc func(string) LaunchEntriesList
-
-func SearchEntries(query string, fns []EntrySearchFunc) (list LaunchEntriesList) {
-	for _, fn := range fns {
-		list = append(list, fn(query)...)
-	}
-	return
-}

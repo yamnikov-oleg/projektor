@@ -1,6 +1,7 @@
 package main
 
 import (
+	"fmt"
 	"os"
 	"os/exec"
 	"runtime"
@@ -215,7 +216,7 @@ func (UiTreeView) Clear() {
 	Ui.ListStore.Clear()
 }
 
-func (UiTreeView) AppendLaunchEntry(entry *LaunchEntry) {
+func (UiTreeView) AppendLaunchEntry(entry *LaunchEntry, category string) {
 	iter := NewTreeIter()
 	Ui.ListStore.Append(iter.TreeIter)
 
@@ -232,6 +233,7 @@ func (UiTreeView) AppendLaunchEntry(entry *LaunchEntry) {
 		3, entry.TabName,
 		4, entry.Name,
 		5, entry.Icon,
+		6, fmt.Sprintf("<small><i>%v</i></small>", category),
 	)
 }
 
@@ -250,15 +252,28 @@ func UpdateSearchResults() {
 	Ui.TreeView.Clear()
 	text := strings.TrimSpace(Ui.SearchEntry.GetText())
 
-	searchFuncs := []EntrySearchFunc{
-		SearchHistEntries,
-		SearchAppEntries,
-		SearchUrlEntries,
-		SearchCmdEntries,
-		SearchFileEntries,
+	type catSf struct {
+		cat string
+		fn  EntrySearchFunc
 	}
-	for _, entry := range SearchEntries(text, searchFuncs) {
-		Ui.TreeView.AppendLaunchEntry(entry)
+
+	searchFuncs := []catSf{
+		{"History", SearchHistEntries},
+		{"Apps", SearchAppEntries},
+		{"Url", SearchUrlEntries},
+		{"Commands", SearchCmdEntries},
+		{"Files", SearchFileEntries},
+	}
+
+	for _, s := range searchFuncs {
+		list := s.fn(text)
+		for i, entry := range list {
+			if i == 0 {
+				Ui.TreeView.AppendLaunchEntry(entry, s.cat)
+			} else {
+				Ui.TreeView.AppendLaunchEntry(entry, "")
+			}
+		}
 	}
 
 	Ui.TreeView.First().Select()
@@ -286,6 +301,8 @@ func SetupUi() {
 		glib.G_TYPE_STRING, // TabName
 		glib.G_TYPE_STRING, // Name
 		glib.G_TYPE_STRING, // IconName
+
+		glib.G_TYPE_STRING, // Category
 	)
 	Ui.Pointer = UiPointer{gdk.GetDefaultDisplay().GetDeviceManager().GetClientPointer()}
 
@@ -320,12 +337,22 @@ func SetupUi() {
 	// TreeView
 	//
 	Ui.TreeView.SetHeadersVisible(false)
+
+	crtCat := gtk.NewCellRendererText()
+	glib.ObjectFromNative(unsafe.Pointer(crtCat.ToCellRenderer())).Set("xalign", 0.0)
+	glib.ObjectFromNative(unsafe.Pointer(crtCat.ToCellRenderer())).Set("yalign", 0.0)
+	clnCat := gtk.NewTreeViewColumnWithAttributes("Cat", crtCat, "markup", 6)
+	clnCat.SetFixedWidth(80)
+	Ui.TreeView.AppendColumn(clnCat)
+
 	crp := gtk.NewCellRendererPixbuf()
-	glib.ObjectFromNative(unsafe.Pointer(crp.ToCellRenderer())).Set("stock-size", int(gtk.ICON_SIZE_DIALOG))
+	glib.ObjectFromNative(unsafe.Pointer(crp.ToCellRenderer())).Set("stock-size", int(gtk.ICON_SIZE_DND))
 	Ui.TreeView.AppendColumn(gtk.NewTreeViewColumnWithAttributes2("Icon", crp, "gicon", 0))
+
 	crt := gtk.NewCellRendererText()
 	glib.ObjectFromNative(unsafe.Pointer(crt.ToCellRenderer())).Set("ellipsize", int(pango.ELLIPSIZE_START))
 	Ui.TreeView.AppendColumn(gtk.NewTreeViewColumnWithAttributes("Id", crt, "markup", 1))
+
 	Ui.TreeView.SetModel(Ui.ListStore)
 	Ui.TreeView.Connect("row-activated", Ui.TreeView.OnRowActivated)
 

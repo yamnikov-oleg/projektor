@@ -18,6 +18,6 @@ const CSS_CODE = `
     background-color: rgba(0,0,0,0.1);
   }
   GtkTreeView.cell {
-    padding: 6px;
+    padding: 6px 3px;
   }
 `
