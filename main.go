@@ -50,6 +50,7 @@ func RunDaemon() {
 		if err != nil {
 			errduring("instance creation", err, "")
 		}
+		go cmd.Wait()
 	}
 	err = keybind.KeyPressFun(cb).Connect(xu, xu.RootWin(), "mod4-q", true)
 	if err != nil {
