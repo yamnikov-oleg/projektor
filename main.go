@@ -34,7 +34,6 @@ func RunInstance() {
 
 	LoadHistory()
 	IndexDesktopEntries()
-	IndexAvailableCommands()
 	SetupUi()
 }
 
