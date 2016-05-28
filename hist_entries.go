@@ -5,7 +5,7 @@ import (
 	"os"
 	"strings"
 
-	"gopkg.in/yaml.v2"
+	"github.com/yamnikov-oleg/projektor/Godeps/_workspace/src/gopkg.in/yaml.v2"
 )
 
 type HistRecord struct {

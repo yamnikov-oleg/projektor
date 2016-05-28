@@ -4,7 +4,7 @@ import (
 	"os"
 	"strings"
 
-	"github.com/yamnikov-oleg/go-ps"
+	"github.com/yamnikov-oleg/projektor/Godeps/_workspace/src/github.com/yamnikov-oleg/go-ps"
 )
 
 var (
