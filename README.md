@@ -1,6 +1,13 @@
 # projektor
 Fast application launcher for Gnome written in Go
 
+## Notice
+
+Due to updated pointer passing rules in Cgo in Go 1.6, this code no longer builds
+with any version of Go higher than 1.5. Unfortunately I don't have time to maintain 
+this project and fix the building issue. Please, use Go 1.5 to build it.
+
+
 ![Screenshot](/screenshots/03.png?raw=true)
 
 ## Features
