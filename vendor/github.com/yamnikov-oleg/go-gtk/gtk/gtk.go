@@ -224,17 +224,17 @@ func argumentPanic(message string) {
 func Init(args *[]string) {
 	if args != nil {
 		var argc C.int = C.int(len(*args))
-		cargs := make([]*C.char, argc)
+		cargs := C._make_strings(argc)
+		defer C.free(unsafe.Pointer(cargs))
 		for i, arg := range *args {
-			cargs[i] = C.CString(arg)
+			str := C.CString(arg)
+			defer C.free(unsafe.Pointer((*C.char)(str)))
+			C._set_string(cargs, C.int(i), str)
 		}
 		C._gtk_init(unsafe.Pointer(&argc), unsafe.Pointer(&cargs))
 		goargs := make([]string, argc)
 		for i := 0; i < int(argc); i++ {
-			goargs[i] = C.GoString(cargs[i])
-		}
-		for i := 0; i < int(argc); i++ {
-			cfree(cargs[i])
+			goargs[i] = C.GoString(C._get_string(cargs, C.int(i)))
 		}
 		*args = goargs
 	} else {

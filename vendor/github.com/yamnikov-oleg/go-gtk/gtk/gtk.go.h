@@ -18,6 +18,18 @@
 #include <stdio.h>
 #include <pthread.h>
 
+static char** _make_strings(int len) {
+	return (char**)malloc(sizeof(char*) * len);
+}
+
+static void _set_string(char** arr, int i, char* str) {
+	arr[i] = str;
+}
+
+static char* _get_string(char** arr, int i) {
+	return arr[i];
+}
+
 static void _gtk_init(void* argc, void* argv) {
 	gtk_init((int*)argc, (char***)argv);
 }
