@@ -70,10 +70,6 @@ func (p *UnixProcess) Refresh() error {
 	if ind := bytes.IndexByte(data, ' '); ind >= 0 {
 		data = data[:ind]
 	}
-	// Remove path to the executable
-	if ind := bytes.LastIndexByte(data, '/'); ind >= 0 {
-		data = data[ind+1:]
-	}
 
 	p.binary = string(data)
 

@@ -16,8 +16,7 @@ type Process interface {
 	// PPid is the parent process ID for this process.
 	PPid() int
 
-	// Executable name running this process. This is not a path to the
-	// executable.
+	// Path to the executable.
 	Executable() string
 }
 
