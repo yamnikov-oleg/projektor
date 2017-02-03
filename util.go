@@ -4,6 +4,7 @@ import (
 	"os"
 	"regexp"
 	"strings"
+	"path"
 )
 
 var (
@@ -25,7 +26,7 @@ func ExpandEnvVars(query string) string {
 	return query
 }
 
-func ExpandPathString(query string) (isPath bool, path string) {
+func ExpandPathString(query string) (bool, string) {
 	if query == "" {
 		return false, query
 	}
@@ -33,13 +34,10 @@ func ExpandPathString(query string) (isPath bool, path string) {
 		return false, query
 	}
 
-	isPath = true
-	path = query
-
-	if path[0] == '~' {
-		path = HOME + path[1:]
+	if query[0] == '~' {
+		query = HOME + query[1:]
 	}
-	return
+	return true, path.Clean(query)
 }
 
 func IsExecutable(info os.FileInfo) bool {

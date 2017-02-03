@@ -8,15 +8,13 @@ import (
 )
 
 type PathQuery struct {
-	OriginalQuery      string
 	QueryPath          string
-	DirectorySubstring string
 	DirectoryPath      string
 	Filename           string
 }
 
 func NewPathQuery(q string) (isPath bool, pq *PathQuery) {
-	pq = &PathQuery{OriginalQuery: q}
+	pq = &PathQuery{}
 
 	isPath, pq.QueryPath = ExpandPathString(q)
 	if !isPath {
@@ -24,20 +22,15 @@ func NewPathQuery(q string) (isPath bool, pq *PathQuery) {
 	}
 
 	pq.DirectoryPath = pq.QueryPath
-	pq.DirectorySubstring = pq.OriginalQuery
 
 	stat, err := os.Stat(pq.QueryPath)
 
 	if err == nil && stat.IsDir() && !strings.HasSuffix(pq.DirectoryPath, "/") {
 		pq.DirectoryPath += "/"
-		pq.DirectorySubstring += "/"
 	} else {
 		if ind := strings.LastIndex(pq.QueryPath, "/"); ind >= 0 {
 			pq.DirectoryPath = pq.QueryPath[:ind+1]
 			pq.Filename = pq.QueryPath[ind+1:]
-		}
-		if ind := strings.LastIndex(pq.OriginalQuery, "/"); ind >= 0 {
-			pq.DirectorySubstring = pq.OriginalQuery[:ind+1]
 		}
 	}
 
@@ -50,10 +43,10 @@ func (pq *PathQuery) MakeLaunchEntry() (*LaunchEntry, error) {
 		return nil, err
 	}
 	if IsExecutable(stat) {
-		return nil, fmt.Errorf("`%v` is executable", pq.OriginalQuery)
+		return nil, fmt.Errorf("`%v` is executable", pq.QueryPath)
 	}
 
-	entry, err := NewEntryForFile(pq.QueryPath, "<b>"+pq.OriginalQuery+"</b>", pq.OriginalQuery)
+	entry, err := NewEntryForFile(pq.QueryPath, "<b>"+pq.QueryPath+"</b>", pq.DirectoryPath)
 	if err != nil {
 		return nil, err
 	}
@@ -122,7 +115,7 @@ func SearchFileEntries(query string) (results LaunchEntriesList) {
 		if stat, err := os.Stat(path); err == nil && stat.IsDir() {
 			isDir = true
 		}
-		tabPath := pq.DirectorySubstring + name
+		tabPath := pq.DirectoryPath + name
 		if isDir {
 			tabPath += "/"
 		}
