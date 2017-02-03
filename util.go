@@ -8,9 +8,9 @@ import (
 )
 
 var (
-	EnvVarRegexp        = regexp.MustCompile(`\$(\w+)`)
-	UrlSchemaRegexp     = regexp.MustCompile(`^\w+://`)
-	HttpUrlSchemaRegexp = regexp.MustCompile(`^(\w+\.)+(\w+)(/.*)?$`)
+	EnvVarRegexp           = regexp.MustCompile(`\$(\w+)`)
+	UrlSchemaRegexp        = regexp.MustCompile(`^\w+://`)
+	HttpUrlSchemaRegexp    = regexp.MustCompile(`^(\w+\.)+(\w+)(/.*)?$`)
 	CmdlineComponentRegexp = regexp.MustCompile(`(?:([^'"\s]+)|'([^']+)'|"([^"]+)")`)
 )
 
@@ -61,7 +61,7 @@ func SplitCommandline(cmdline string) []string {
 	components := []string{}
 
 	matches := CmdlineComponentRegexp.FindAllStringSubmatch(cmdline, -1)
-	for _, match := range matches{
+	for _, match := range matches {
 		fstNonEmptyGrp := match[0]
 		for _, g := range match[1:] {
 			if g != "" {
