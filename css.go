@@ -1,9 +1,6 @@
 package main
 
 const CSS_CODE = `
-  GtkWindow {
-    border: 1px solid rgba(0,0,0,0.2);
-  }
   GtkEntry {
     background-image: none;
     border: none;
