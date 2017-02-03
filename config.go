@@ -39,6 +39,31 @@ func DefaultConfig() *ProjektorConfig {
 	return c
 }
 
+func SaveConfig(cfg *ProjektorConfig) error {
+	err := os.MkdirAll(AppDir, 0700)
+	if err != nil {
+		return err
+	}
+
+	f, err := os.Create(ConfigFilePath)
+	if err != nil {
+		return err
+	}
+	defer f.Close()
+
+	buf, err := yaml.Marshal(cfg)
+	if err != nil {
+		return err
+	}
+
+	_, err = f.Write(buf)
+	if err != nil {
+		return err
+	}
+
+	return nil
+}
+
 func OpenConfig() (*ProjektorConfig, error) {
 	f, err := os.Open(ConfigFilePath)
 	if err != nil {
@@ -51,7 +76,7 @@ func OpenConfig() (*ProjektorConfig, error) {
 		return nil, err
 	}
 
-	config := &ProjektorConfig{}
+	config := DefaultConfig()
 	err = yaml.Unmarshal(contents, config)
 	if err != nil {
 		return nil, err
@@ -60,44 +85,20 @@ func OpenConfig() (*ProjektorConfig, error) {
 	return config, nil
 }
 
-func CreateConfig() (*ProjektorConfig, error) {
-	err := os.MkdirAll(AppDir, 0700)
-	if err != nil {
-		return nil, err
-	}
-
-	f, err := os.Create(ConfigFilePath)
-	if err != nil {
-		return nil, err
-	}
-	defer f.Close()
-
-	config := DefaultConfig()
-	buf, err := yaml.Marshal(config)
-	if err != nil {
-		return nil, err
-	}
-
-	_, err = f.Write(buf)
-	if err != nil {
-		return nil, err
-	}
-
-	return config, nil
-}
-
 func MustLoadConfig() *ProjektorConfig {
-	config, err := OpenConfig()
-	if err == nil {
+	var config *ProjektorConfig
+	var err error
+
+	config, err = OpenConfig()
+	if err != nil {
+		errduring("opening config file at %q", err, "Attempting to create one", ConfigFilePath)
+		config = DefaultConfig()
+	}
+
+	if err := SaveConfig(config); err != nil {
+		errduring("creating config file at %q", err, "Using default options", ConfigFilePath)
 		return config
 	}
 
-	errduring("opening config file at %q", err, "Attempting to create one", ConfigFilePath)
-	config, err = CreateConfig()
-	if err == nil {
-		return config
-	}
-
-	errduring("creating config file at %q", err, "Using default options", ConfigFilePath)
-	return DefaultConfig()
+	return config
 }
