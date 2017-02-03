@@ -122,7 +122,13 @@ func (iter UiTreeIter) Execute() {
 	}
 	var val glib.GValue
 	Ui.ListStore.GetValue(iter.TreeIter, 2, &val)
-	cmd := SplitCommandline(val.GetString())
+
+	cmdline := val.GetString()
+	if cmdline == "" {
+		return
+	}
+
+	cmd := SplitCommandline(cmdline)
 	exec.Command(cmd[0], cmd[1:]...).Start()
 	MakeHistRecord(HistRecord{
 		Name:    iter.Name(),
@@ -256,6 +262,9 @@ type Category struct {
 func EnabledCategories() []Category {
 	cats := []Category{}
 
+	if Config.EnabledCategories.Calc {
+		cats = append(cats, Category{"Calc", PerformCalc})
+	}
 	if Config.EnabledCategories.History {
 		cats = append(cats, Category{"History", SearchHistEntries})
 	}

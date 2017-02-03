@@ -19,6 +19,7 @@ const (
 	FileEntry
 	UrlEntry
 	HistEntry
+	CalcEntry
 )
 
 type LaunchEntry struct {
@@ -113,6 +114,19 @@ func NewUrlLaunchEntry(url string) *LaunchEntry {
 		MarkupName: EscapeAmpersand(url),
 		TabName:    url,
 		Cmdline:    "xdg-open " + url,
+	}
+}
+
+func NewCalcLaunchEntry(val float64) *LaunchEntry {
+	valStr := fmt.Sprint(val)
+
+	return &LaunchEntry{
+		Type:       CalcEntry,
+		Icon:       "gnome-calculator",
+		Name:       valStr,
+		MarkupName: fmt.Sprintf("= <b>%v</b>", val),
+		TabName:    valStr,
+		Cmdline:    "",
 	}
 }
 

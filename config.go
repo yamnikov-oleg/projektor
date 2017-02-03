@@ -9,6 +9,7 @@ import (
 
 type ProjektorConfig struct {
 	EnabledCategories struct {
+		Calc     bool
 		History  bool
 		Apps     bool
 		URL      bool
@@ -28,6 +29,7 @@ var (
 func DefaultConfig() *ProjektorConfig {
 	c := &ProjektorConfig{}
 
+	c.EnabledCategories.Calc = true
 	c.EnabledCategories.History = true
 	c.EnabledCategories.Apps = true
 	c.EnabledCategories.URL = true
