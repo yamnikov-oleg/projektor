@@ -260,7 +260,7 @@ func UpdateSearchResults() {
 	searchFuncs := []catSf{
 		{"History", SearchHistEntries},
 		{"Apps", SearchAppEntries},
-		{"Url", SearchUrlEntries},
+		{"URL", SearchUrlEntries},
 		{"Commands", SearchCmdEntries},
 		{"Files", SearchFileEntries},
 	}
