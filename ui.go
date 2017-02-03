@@ -8,11 +8,11 @@ import (
 	"strings"
 	"unsafe"
 
-	"github.com/yamnikov-oleg/projektor/Godeps/_workspace/src/github.com/yamnikov-oleg/go-gtk/gdk"
-	"github.com/yamnikov-oleg/projektor/Godeps/_workspace/src/github.com/yamnikov-oleg/go-gtk/gio"
-	"github.com/yamnikov-oleg/projektor/Godeps/_workspace/src/github.com/yamnikov-oleg/go-gtk/glib"
-	"github.com/yamnikov-oleg/projektor/Godeps/_workspace/src/github.com/yamnikov-oleg/go-gtk/gtk"
-	"github.com/yamnikov-oleg/projektor/Godeps/_workspace/src/github.com/yamnikov-oleg/go-gtk/pango"
+	"github.com/yamnikov-oleg/go-gtk/gdk"
+	"github.com/yamnikov-oleg/go-gtk/gio"
+	"github.com/yamnikov-oleg/go-gtk/glib"
+	"github.com/yamnikov-oleg/go-gtk/gtk"
+	"github.com/yamnikov-oleg/go-gtk/pango"
 )
 
 var Ui struct {

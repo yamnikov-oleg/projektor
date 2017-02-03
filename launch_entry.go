@@ -7,7 +7,7 @@ import (
 	"sort"
 	"strings"
 
-	"github.com/yamnikov-oleg/projektor/Godeps/_workspace/src/github.com/yamnikov-oleg/go-gtk/gio"
+	"github.com/yamnikov-oleg/go-gtk/gio"
 	"github.com/yamnikov-oleg/projektor/conf"
 )
 

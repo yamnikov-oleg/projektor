@@ -9,9 +9,9 @@ import (
 	"os/exec"
 	"runtime/pprof"
 
-	"github.com/yamnikov-oleg/projektor/Godeps/_workspace/src/github.com/BurntSushi/xgbutil"
-	"github.com/yamnikov-oleg/projektor/Godeps/_workspace/src/github.com/BurntSushi/xgbutil/keybind"
-	"github.com/yamnikov-oleg/projektor/Godeps/_workspace/src/github.com/BurntSushi/xgbutil/xevent"
+	"github.com/BurntSushi/xgbutil"
+	"github.com/BurntSushi/xgbutil/keybind"
+	"github.com/BurntSushi/xgbutil/xevent"
 )
 
 var (
