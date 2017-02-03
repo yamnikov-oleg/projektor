@@ -8,9 +8,9 @@ import (
 )
 
 type PathQuery struct {
-	QueryPath          string
-	DirectoryPath      string
-	Filename           string
+	QueryPath     string
+	DirectoryPath string
+	Filename      string
 }
 
 func NewPathQuery(q string) (isPath bool, pq *PathQuery) {
