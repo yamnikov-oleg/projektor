@@ -2,14 +2,15 @@ package main
 
 import (
 	"os"
+	"path"
 	"regexp"
 	"strings"
-	"path"
 )
 
 var (
-	EnvVarRegexp    = regexp.MustCompile(`\$(\w+)`)
-	UrlSchemaRegexp = regexp.MustCompile(`\w+://`)
+	EnvVarRegexp        = regexp.MustCompile(`\$(\w+)`)
+	UrlSchemaRegexp     = regexp.MustCompile(`^\w+://`)
+	HttpUrlSchemaRegexp = regexp.MustCompile(`^(\w+\.)+(\w+)(/.*)?$`)
 )
 
 func EscapeAmpersand(s string) string {
@@ -48,12 +49,9 @@ func IsExecutable(info os.FileInfo) bool {
 }
 
 func IsUrl(query string) bool {
-	inds := UrlSchemaRegexp.FindStringIndex(query)
-	if len(inds) == 0 {
-		return false
-	}
-	if inds[0] != 0 {
-		return false
-	}
-	return true
+	return UrlSchemaRegexp.MatchString(query)
+}
+
+func IsHttpUrl(query string) bool {
+	return HttpUrlSchemaRegexp.MatchString(query)
 }
