@@ -248,28 +248,44 @@ func (UiPointer) Grab() {
 	}
 }
 
+type Category struct {
+	Name   string
+	Search EntrySearchFunc
+}
+
+func EnabledCategories() []Category {
+	cats := []Category{}
+
+	if Config.EnabledCategories.History {
+		cats = append(cats, Category{"History", SearchHistEntries})
+	}
+	if Config.EnabledCategories.Apps {
+		cats = append(cats, Category{"Apps", SearchAppEntries})
+	}
+	if Config.EnabledCategories.URL {
+		cats = append(cats, Category{"URL", SearchUrlEntries})
+	}
+	if Config.EnabledCategories.Commands {
+		cats = append(cats, Category{"Commands", SearchCmdEntries})
+	}
+	if Config.EnabledCategories.Files {
+		cats = append(cats, Category{"Files", SearchFileEntries})
+	}
+
+	return cats
+}
+
 func UpdateSearchResults() {
 	Ui.TreeView.Clear()
 	text := strings.TrimSpace(Ui.SearchEntry.GetText())
 
-	type catSf struct {
-		cat string
-		fn  EntrySearchFunc
-	}
+	cats := EnabledCategories()
 
-	searchFuncs := []catSf{
-		{"History", SearchHistEntries},
-		{"Apps", SearchAppEntries},
-		{"URL", SearchUrlEntries},
-		{"Commands", SearchCmdEntries},
-		{"Files", SearchFileEntries},
-	}
-
-	for _, s := range searchFuncs {
-		list := s.fn(text)
+	for _, s := range cats {
+		list := s.Search(text)
 		for i, entry := range list {
 			if i == 0 {
-				Ui.TreeView.AppendLaunchEntry(entry, s.cat)
+				Ui.TreeView.AppendLaunchEntry(entry, s.Name)
 			} else {
 				Ui.TreeView.AppendLaunchEntry(entry, "")
 			}

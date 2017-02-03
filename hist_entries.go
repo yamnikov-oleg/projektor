@@ -21,10 +21,6 @@ type HistRecord struct {
 
 type HistoryWarehouse []HistRecord
 
-const (
-	HistCapacity = 40
-)
-
 var (
 	HistFilepath = AppDir + "/history.yaml"
 	// Older records are first, newer are at the end
@@ -57,8 +53,8 @@ func LoadHistory() {
 
 	// Truncate to proper size
 	hl := len(History)
-	if hl > HistCapacity {
-		History = History[hl-HistCapacity:]
+	if hl > Config.History.Capacity {
+		History = History[hl-Config.History.Capacity:]
 	}
 }
 
