@@ -122,7 +122,7 @@ func (iter UiTreeIter) Execute() {
 	}
 	var val glib.GValue
 	Ui.ListStore.GetValue(iter.TreeIter, 2, &val)
-	cmd := strings.Fields(val.GetString())
+	cmd := SplitCommandline(val.GetString())
 	exec.Command(cmd[0], cmd[1:]...).Start()
 	MakeHistRecord(HistRecord{
 		Name:    iter.Name(),

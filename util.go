@@ -11,6 +11,7 @@ var (
 	EnvVarRegexp        = regexp.MustCompile(`\$(\w+)`)
 	UrlSchemaRegexp     = regexp.MustCompile(`^\w+://`)
 	HttpUrlSchemaRegexp = regexp.MustCompile(`^(\w+\.)+(\w+)(/.*)?$`)
+	CmdlineComponentRegexp = regexp.MustCompile(`(?:([^'"\s]+)|'([^']+)'|"([^"]+)")`)
 )
 
 func EscapeAmpersand(s string) string {
@@ -54,4 +55,23 @@ func IsUrl(query string) bool {
 
 func IsHttpUrl(query string) bool {
 	return HttpUrlSchemaRegexp.MatchString(query)
+}
+
+func SplitCommandline(cmdline string) []string {
+	components := []string{}
+
+	matches := CmdlineComponentRegexp.FindAllStringSubmatch(cmdline, -1)
+	for _, match := range matches{
+		fstNonEmptyGrp := match[0]
+		for _, g := range match[1:] {
+			if g != "" {
+				fstNonEmptyGrp = g
+				break
+			}
+		}
+
+		components = append(components, fstNonEmptyGrp)
+	}
+
+	return components
 }
