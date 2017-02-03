@@ -3,16 +3,6 @@ Fast application launcher for Gnome written in Go
 
 ![Screenshot](/screenshots/03.png?raw=true)
 
-## Notice
-
-Due to updated pointer passing rules in Cgo in Go 1.6, this code no longer builds
-with any version of Go higher than 1.5. Unfortunately I don't have time to maintain 
-this project and fix the issue.
-
-If you want to use projektor on 64-bit linux, you can download prebuilt binary from
-the [releases page](https://github.com/yamnikov-oleg/projektor/releases). Otherwise,
-you'll have to build the program yourself.
-
 ## Features
 
 * Search and launch applications installed on your system
