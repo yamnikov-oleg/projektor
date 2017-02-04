@@ -5,7 +5,7 @@ import (
 	"go/parser"
 	"math"
 	"strconv"
-  "strings"
+	"strings"
 )
 
 func PerformCalc(query string) LaunchEntriesList {
@@ -41,12 +41,12 @@ func EvaluateGoExpr(expr ast.Expr) (val float64, ok bool) {
 		return EvaluateGoCallExpr(expr.Fun, expr.Args)
 
 	case *ast.Ident:
-    val, ok := SupportedConstants[strings.ToLower(expr.String())]
+		val, ok := SupportedConstants[strings.ToLower(expr.String())]
 		return val, ok
 
-  case *ast.UnaryExpr:
+	case *ast.UnaryExpr:
 		// Only negation operator i supported
-    if expr.Op.String() != "-" {
+		if expr.Op.String() != "-" {
 			return 0, false
 		}
 		val, ok := EvaluateGoExpr(expr.X)
@@ -215,7 +215,7 @@ var SupportedCalcFuncs []CalcFunc = []CalcFunc{
 	{
 		[]string{"log"}, 2,
 		func(args ...float64) (float64, bool) {
-			return math.Log(args[1])/math.Log(args[0]), true
+			return math.Log(args[1]) / math.Log(args[0]), true
 		},
 	},
 }
