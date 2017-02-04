@@ -57,7 +57,7 @@ func RunDaemon() {
 		}
 		go cmd.Wait()
 	}
-	err = keybind.KeyPressFun(cb).Connect(xu, xu.RootWin(), "mod4-q", true)
+	err = keybind.KeyPressFun(cb).Connect(xu, xu.RootWin(), Config.KeyBind, true)
 	if err != nil {
 		log.Fatal(err)
 	}

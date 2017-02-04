@@ -8,6 +8,7 @@ import (
 )
 
 type ProjektorConfig struct {
+	KeyBind string
 	EnabledCategories struct {
 		Calc      bool
 		History   bool
@@ -33,6 +34,8 @@ var (
 
 func DefaultConfig() *ProjektorConfig {
 	c := &ProjektorConfig{}
+
+	c.KeyBind = "mod4-q"
 
 	c.EnabledCategories.Calc = true
 	c.EnabledCategories.History = true
