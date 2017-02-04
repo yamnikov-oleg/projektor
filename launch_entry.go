@@ -111,7 +111,7 @@ func NewEntryForFile(path string, displayName string, tabName string) (*LaunchEn
 func NewUrlLaunchEntry(url string) *LaunchEntry {
 	return &LaunchEntry{
 		Type:       UrlEntry,
-		Icon:       "web-browser",
+		Icon:       Config.URL.Icon,
 		Name:       url,
 		MarkupName: EscapeAmpersand(url),
 		TabName:    url,

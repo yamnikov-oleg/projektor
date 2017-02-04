@@ -108,6 +108,12 @@ enabledcategories:
 history:
   # How many last used items should Projektor remember for history?
   capacity: 40
+# URL category configuration
+url:
+  # Icon for URL entries. Use a name of some gtk icon installed on your system,
+  # e.g. `firefox`. You can specify absolute path to an image file as well,
+  # e.g. `/home/me/.projektor/url-icon.png`
+  icon: web-browser
 # Web searching category configuration
 websearch:
   # Template for search url. `%s` marker denotes, where the search query

@@ -8,7 +8,7 @@ import (
 )
 
 type ProjektorConfig struct {
-	KeyBind string
+	KeyBind           string
 	EnabledCategories struct {
 		Calc      bool
 		History   bool
@@ -20,6 +20,9 @@ type ProjektorConfig struct {
 	}
 	History struct {
 		Capacity int
+	}
+	URL struct {
+		Icon string
 	}
 	WebSearch struct {
 		Engine string
@@ -46,6 +49,8 @@ func DefaultConfig() *ProjektorConfig {
 	c.EnabledCategories.WebSearch = true
 
 	c.History.Capacity = 40
+
+	c.URL.Icon = "web-browser"
 
 	c.WebSearch.Engine = "https://google.com/search?q=%s"
 	c.WebSearch.Icon = "web-browser"
