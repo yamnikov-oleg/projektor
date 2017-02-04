@@ -18,6 +18,13 @@ func EscapeAmpersand(s string) string {
 	return strings.Replace(s, "&", "&amp;", -1)
 }
 
+func EscapeHTML(s string) string {
+	s = strings.Replace(s, "&", "&amp;", -1)
+	s = strings.Replace(s, "<", "&lt;", -1)
+	s = strings.Replace(s, ">", "&gt;", -1)
+	return s
+}
+
 func ExpandEnvVars(query string) string {
 	matches := EnvVarRegexp.FindAllStringSubmatch(query, -1)
 	for _, match := range matches {

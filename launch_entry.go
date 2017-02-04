@@ -137,7 +137,7 @@ func NewWebSearchEntry(q string) *LaunchEntry {
 		Type:       WebSearchEntry,
 		Icon:       Config.WebSearch.Icon,
 		Name:       q,
-		MarkupName: fmt.Sprintf("Search for: <b>%v</b>", q),
+		MarkupName: fmt.Sprintf("Search for: <b>%v</b>", EscapeHTML(q)),
 		TabName:    q,
 		Cmdline:    "xdg-open " + fmt.Sprintf(Config.WebSearch.Engine, url.QueryEscape(q)),
 	}
