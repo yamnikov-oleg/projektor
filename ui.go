@@ -280,6 +280,9 @@ func EnabledCategories() []Category {
 	if Config.EnabledCategories.Files {
 		cats = append(cats, Category{"Files", SearchFileEntries})
 	}
+	if Config.EnabledCategories.WebSearch {
+		cats = append(cats, Category{"Web Search", MakeWebSearchEntry})
+	}
 
 	return cats
 }

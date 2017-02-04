@@ -3,6 +3,7 @@ package main
 import (
 	"errors"
 	"fmt"
+	"net/url"
 	"os"
 	"sort"
 	"strings"
@@ -20,6 +21,7 @@ const (
 	UrlEntry
 	HistEntry
 	CalcEntry
+	WebSearchEntry
 )
 
 type LaunchEntry struct {
@@ -127,6 +129,17 @@ func NewCalcLaunchEntry(val float64) *LaunchEntry {
 		MarkupName: fmt.Sprintf("= <b>%v</b>", val),
 		TabName:    valStr,
 		Cmdline:    "",
+	}
+}
+
+func NewWebSearchEntry(q string) *LaunchEntry {
+	return &LaunchEntry{
+		Type:       WebSearchEntry,
+		Icon:       Config.WebSearch.Icon,
+		Name:       q,
+		MarkupName: fmt.Sprintf("Search for: <b>%v</b>", q),
+		TabName:    q,
+		Cmdline:    "xdg-open " + fmt.Sprintf(Config.WebSearch.Engine, url.QueryEscape(q)),
 	}
 }
 

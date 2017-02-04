@@ -9,15 +9,20 @@ import (
 
 type ProjektorConfig struct {
 	EnabledCategories struct {
-		Calc     bool
-		History  bool
-		Apps     bool
-		URL      bool
-		Commands bool
-		Files    bool
+		Calc      bool
+		History   bool
+		Apps      bool
+		URL       bool
+		Commands  bool
+		Files     bool
+		WebSearch bool
 	}
 	History struct {
 		Capacity int
+	}
+	WebSearch struct {
+		Engine string
+		Icon   string
 	}
 }
 
@@ -35,8 +40,12 @@ func DefaultConfig() *ProjektorConfig {
 	c.EnabledCategories.URL = true
 	c.EnabledCategories.Commands = true
 	c.EnabledCategories.Files = true
+	c.EnabledCategories.WebSearch = true
 
 	c.History.Capacity = 40
+
+	c.WebSearch.Engine = "https://google.com/search?q=%s"
+	c.WebSearch.Icon = "web-browser"
 
 	return c
 }
