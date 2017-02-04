@@ -1,7 +1,7 @@
 # projektor
 Fast application launcher for Gnome written in Go
 
-![Screenshot](/screenshots/03.png?raw=true)
+![Screenshot](/screenshots/04.png?raw=true)
 
 ## Features
 
