@@ -9,7 +9,17 @@ import (
 var PathEntries = strings.Split(os.Getenv("PATH"), string(os.PathListSeparator))
 
 func SearchCmdEntries(query string) (list LaunchEntriesList) {
-	if query != "" && !IsInHistory(query) && IsCommand(query) {
+	query = strings.TrimSpace(query)
+	if query == "" {
+		return nil
+	}
+
+	cmd := SplitCommandline(query)
+	if len(cmd) == 0 {
+		return nil
+	}
+
+	if !IsInHistory(query) && IsCommand(cmd[0]) {
 		return LaunchEntriesList{NewEntryFromCommand(query)}
 	}
 	return nil
