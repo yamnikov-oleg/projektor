@@ -4,6 +4,7 @@ package main
 
 import (
 	"flag"
+	"fmt"
 	"log"
 	"os"
 	"os/exec"
@@ -22,11 +23,15 @@ var (
 	SingleInstance bool
 
 	CPUProfile string
+
+	Version     string = "v0.1+"
+	ShowVersion bool
 )
 
 func init() {
 	flag.BoolVar(&SingleInstance, SIFlag, false, "Run an instance of projektor, not a daemon")
 	flag.StringVar(&CPUProfile, "cpuprofile", "", "Run CPU profiling and output results to the `file`")
+	flag.BoolVar(&ShowVersion, "V", false, "Display version of current projektor build.\n\tPlus sign means that the build includes several more commits over the release.")
 }
 
 func RunInstance() {
@@ -67,6 +72,11 @@ func RunDaemon() {
 
 func main() {
 	flag.Parse()
+
+	if ShowVersion {
+		fmt.Printf("Projektor %v\n", Version)
+		os.Exit(0)
+	}
 
 	if CPUProfile != "" {
 		f, err := os.Create(CPUProfile)
