@@ -93,6 +93,11 @@ func MakeHistRecord(entry HistRecord) {
 }
 
 func IsInHistory(cmdline string) bool {
+	// If history category is disabled, history contains no entries.
+	if !Config.EnabledCategories.History {
+		return false
+	}
+
 	for _, r := range History {
 		if r.Cmdline == cmdline {
 			return true
