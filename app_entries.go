@@ -3,7 +3,10 @@ package main
 import (
 	"io/ioutil"
 	"os"
+	"path"
 	"strings"
+
+	yaml "gopkg.in/yaml.v2"
 )
 
 const (
@@ -74,9 +77,7 @@ func (parser *AppEntriesParser) Next() bool {
 	return true
 }
 
-var ApplicationEntries LaunchEntriesList
-
-func IndexDesktopEntries() {
+func collectDesktopEntries() (entries LaunchEntriesList) {
 	parser := NewAppEntriesParser()
 
 	if err := parser.AppendDirectory(SharedAppDir); err != nil {
@@ -87,10 +88,80 @@ func IndexDesktopEntries() {
 	}
 
 	for parser.Next() {
-		ApplicationEntries = append(ApplicationEntries, parser.Entry)
+		entries = append(entries, parser.Entry)
 	}
 
-	ApplicationEntries.SortByName()
+	entries.SortByName()
+
+	return
+}
+
+var CacheFilePath = path.Join(AppDir, "desktop-launchers.cache")
+
+func getCachedDesktopEntries() (LaunchEntriesList, error) {
+	fd, err := os.Open(CacheFilePath)
+	if err != nil {
+		return nil, err
+	}
+	defer fd.Close()
+
+	contents, err := ioutil.ReadAll(fd)
+	if err != nil {
+		return nil, err
+	}
+
+	var entries LaunchEntriesList
+	if err := yaml.Unmarshal(contents, &entries); err != nil {
+		return nil, err
+	}
+
+	return entries, nil
+}
+
+func cacheDesktopEntries(entries LaunchEntriesList) error {
+	data, err := yaml.Marshal(entries)
+	if err != nil {
+		return err
+	}
+
+	fd, err := os.Create(CacheFilePath)
+	if err != nil {
+		return err
+	}
+	defer fd.Close()
+
+	if _, err := fd.Write(data); err != nil {
+		return err
+	}
+
+	return nil
+}
+
+var ApplicationEntries LaunchEntriesList
+
+func IndexDesktopEntries() {
+	updateCache := func() LaunchEntriesList {
+		updatedEntries := collectDesktopEntries()
+		err := cacheDesktopEntries(updatedEntries)
+		if err != nil {
+			errduring("saving desktop entries cache", err, "Skipping caching procedure.")
+		}
+		logf("Updated cache with %v entries.\n", len(updatedEntries))
+		return updatedEntries
+	}
+
+	logf("Performing desktop entries cache indexing...\n")
+
+	entries, err := getCachedDesktopEntries()
+	if err == nil {
+		logf("Found cache of %v entries.\n", len(entries))
+		logf("Running cache update in background...\n")
+		go updateCache()
+		ApplicationEntries = entries
+	} else {
+		logf("No cache found, collecting desktop entries in foreground...\n")
+		ApplicationEntries = updateCache()
+	}
 }
 
 type EntriesIterator struct {
