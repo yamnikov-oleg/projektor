@@ -21,6 +21,10 @@ func KillIfOtherInstance(p ps.Process) bool {
 		return false
 	}
 
+	if strings.Contains(p.Cmdline(), "-dry") {
+		return false
+	}
+
 	osproc, err := os.FindProcess(p.Pid())
 	if err != nil {
 		return false

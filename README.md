@@ -86,6 +86,14 @@ Here's annotation for every paramater of the default config:
 # You can use modifier keys `shift` and `control`.
 # To identify some complex keybind use `xbindkeys` tool.
 keybind: mod4-q
+# How often should projektor daemon run an instance in the background with
+# '-dry' flag?
+# The dry instances are run to force the kernel to cache all the data needed
+# by projektor to run. By forcing the caching we can enable projektor instances
+# to startup faster.
+# The interval is specified in seconds. Set to 0 if you want to disable
+# the force caching completely.
+forcecacheinterval: 60
 # Searching categories, enabled for use.
 # Disable a category by settings its flag to `false` and projektor will no longer
 # offer you entries of that category.

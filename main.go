@@ -9,6 +9,7 @@ import (
 	"os"
 	"os/exec"
 	"runtime/pprof"
+	"time"
 
 	"github.com/BurntSushi/xgbutil"
 	"github.com/BurntSushi/xgbutil/keybind"
@@ -50,6 +51,22 @@ func RunInstance(dry bool) {
 
 func RunDaemon() {
 	logf("Running key binding daemon of projektor\n")
+
+	fci := Config.ForceCacheInterval
+	if fci > 0 {
+		go func() {
+			for {
+				logf("Running dry instance...\n")
+				cmd := exec.Command(os.Args[0], "-"+SIFlag, "-dry")
+				err := cmd.Start()
+				if err != nil {
+					errduring("dry instance creation", err, "")
+				}
+				go cmd.Wait()
+				time.Sleep(time.Duration(fci) * time.Second)
+			}
+		}()
+	}
 
 	xu, err := xgbutil.NewConn()
 	if err != nil {

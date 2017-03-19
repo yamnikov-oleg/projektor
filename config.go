@@ -1,15 +1,17 @@
 package main
 
 import (
-	"gopkg.in/yaml.v2"
 	"io/ioutil"
 	"os"
 	"path"
+
+	"gopkg.in/yaml.v2"
 )
 
 type ProjektorConfig struct {
-	KeyBind           string
-	EnabledCategories struct {
+	KeyBind            string
+	ForceCacheInterval int64
+	EnabledCategories  struct {
 		Calc      bool
 		History   bool
 		Apps      bool
@@ -39,6 +41,7 @@ func DefaultConfig() *ProjektorConfig {
 	c := &ProjektorConfig{}
 
 	c.KeyBind = "mod4-q"
+	c.ForceCacheInterval = 60
 
 	c.EnabledCategories.Calc = true
 	c.EnabledCategories.History = true
