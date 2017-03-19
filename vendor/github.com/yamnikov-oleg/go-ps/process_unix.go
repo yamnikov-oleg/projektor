@@ -21,7 +21,8 @@ type UnixProcess struct {
 	//pgrp  int
 	//sid   int
 
-	binary string
+	binary  string
+	cmdline string
 }
 
 func (p *UnixProcess) Pid() int {
@@ -34,6 +35,10 @@ func (p *UnixProcess) PPid() int {
 
 func (p *UnixProcess) Executable() string {
 	return p.binary
+}
+
+func (p *UnixProcess) Cmdline() string {
+	return p.cmdline
 }
 
 // Refresh reloads all the data associated with this process.
@@ -62,6 +67,8 @@ func (p *UnixProcess) Refresh() error {
 	if len(data) == 0 {
 		return errors.New("empty name")
 	}
+
+	p.cmdline = string(data)
 
 	// Remove arguments
 	if ind := bytes.IndexByte(data, 0); ind >= 0 {

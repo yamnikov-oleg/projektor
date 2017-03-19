@@ -18,6 +18,9 @@ type Process interface {
 
 	// Path to the executable.
 	Executable() string
+
+	// Full command line
+	Cmdline() string
 }
 
 // Processes returns all processes.
