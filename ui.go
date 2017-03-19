@@ -312,11 +312,13 @@ func init() {
 }
 
 func SetupUi() {
+	logf("gtk.Init()\n")
 	gtk.Init(&os.Args)
 
 	//
 	// Constructors
 	//
+	logf("Constructors\n")
 	Ui.Window = UiWindow{gtk.NewWindow(gtk.WINDOW_TOPLEVEL)}
 	Ui.RootBox = gtk.NewVBox(false, 6)
 	Ui.SearchEntry = UiEntry{gtk.NewSearchEntry()}
@@ -337,6 +339,7 @@ func SetupUi() {
 	//
 	// Window
 	//
+	logf("Window\n")
 	Ui.Window.SetPosition(gtk.WIN_POS_CENTER)
 	Ui.Window.SetGravity(gdk.GRAVITY_SOUTH)
 	Ui.Window.SetDecorated(false)
@@ -359,11 +362,13 @@ func SetupUi() {
 	//
 	// SearchEntry
 	//
+	logf("SearchEntry\n")
 	Ui.SearchEntry.Connect("changed", Ui.SearchEntry.OnChanged)
 
 	//
 	// TreeView
 	//
+	logf("TreeView\n")
 	Ui.TreeView.SetHeadersVisible(false)
 
 	crtCat := gtk.NewCellRendererText()
@@ -387,6 +392,7 @@ func SetupUi() {
 	//
 	// Focus setup
 	//
+	logf("Focus setup\n")
 	Ui.RootBox.SetCanFocus(false)
 	Ui.ScrollWin.SetCanFocus(false)
 	Ui.TreeView.SetCanFocus(false)
@@ -395,6 +401,7 @@ func SetupUi() {
 	//
 	// Packing
 	//
+	logf("Packing\n")
 	Ui.ScrollWin.Add(Ui.TreeView.TreeView)
 	Ui.RootBox.PackStart(Ui.SearchEntry.Entry, false, false, 0)
 	Ui.RootBox.PackEnd(Ui.ScrollWin, true, true, 0)
@@ -403,6 +410,7 @@ func SetupUi() {
 	//
 	// Stylesheet loading
 	//
+	logf("Stylesheet\n")
 	provider := gtk.NewCssProvider()
 	screen := gdk.GetDefaultDisplay().GetDefaultScreen()
 	gtk.StyleContextAddProviderForScreen(screen, provider, gtk.STYLE_PROVIDER_PRIORITY_APPLICATION)
@@ -411,7 +419,12 @@ func SetupUi() {
 		errduring("CSS loading", err, "")
 	}
 
+	logf("UpdateSearchResults()\n")
 	UpdateSearchResults()
+
+	logf("ShowAll()\n")
 	Ui.Window.ShowAll()
+
+	logf("gtk.Main()\n")
 	gtk.Main()
 }

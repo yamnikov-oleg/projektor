@@ -37,8 +37,11 @@ func init() {
 func RunInstance() {
 	logf("Running single instance of projektor\n")
 
+	logf("Loading history...\n")
 	LoadHistory()
+	logf("Indexing desktop entries...\n")
 	IndexDesktopEntries()
+	logf("Set up the UI.\n")
 	SetupUi()
 }
 

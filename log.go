@@ -3,6 +3,7 @@ package main
 import (
 	"flag"
 	"fmt"
+	"time"
 )
 
 var (
@@ -15,7 +16,8 @@ func init() {
 
 func logf(format string, a ...interface{}) {
 	if Verbose {
-		fmt.Printf(format, a...)
+		stamp := time.Now().Format(time.StampMilli)
+		fmt.Printf(stamp+" "+format, a...)
 	}
 }
 
