@@ -26,15 +26,18 @@ var (
 
 	Version     string = "v0.1+"
 	ShowVersion bool
+
+	DryRun bool
 )
 
 func init() {
 	flag.BoolVar(&SingleInstance, SIFlag, false, "Run an instance of projektor, not a daemon")
 	flag.StringVar(&CPUProfile, "cpuprofile", "", "Run CPU profiling and output results to the `file`")
 	flag.BoolVar(&ShowVersion, "V", false, "Display version of current projektor build.\n\tPlus sign means that the build includes several more commits over the release.")
+	flag.BoolVar(&DryRun, "dry", false, "Prepare to run projektor instance but do not run (useful to force kernel caching).")
 }
 
-func RunInstance() {
+func RunInstance(dry bool) {
 	logf("Running single instance of projektor\n")
 
 	logf("Loading history...\n")
@@ -42,7 +45,7 @@ func RunInstance() {
 	logf("Indexing desktop entries...\n")
 	IndexDesktopEntries()
 	logf("Set up the UI.\n")
-	SetupUi()
+	SetupUi(dry)
 }
 
 func RunDaemon() {
@@ -93,7 +96,7 @@ func main() {
 	}
 
 	if SingleInstance {
-		RunInstance()
+		RunInstance(DryRun)
 	} else {
 		RunDaemon()
 	}

@@ -311,7 +311,7 @@ func init() {
 	runtime.LockOSThread()
 }
 
-func SetupUi() {
+func SetupUi(dry bool) {
 	logf("gtk.Init()\n")
 	gtk.Init(&os.Args)
 
@@ -422,8 +422,15 @@ func SetupUi() {
 	logf("UpdateSearchResults()\n")
 	UpdateSearchResults()
 
-	logf("ShowAll()\n")
-	Ui.Window.ShowAll()
+	if dry {
+		logf("Defer MainQuit()\n")
+		glib.IdleAdd(func() {
+			gtk.MainQuit()
+		})
+	} else {
+		logf("ShowAll()\n")
+		Ui.Window.ShowAll()
+	}
 
 	logf("gtk.Main()\n")
 	gtk.Main()
