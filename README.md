@@ -53,8 +53,8 @@ To install Projektor:
 * Download latest build from the [releases page](https://github.com/yamnikov-oleg/projektor/releases).
   If build for you OS or architecture is not available, read Building section on
   how to build projektor yourself.
-* Add projektor to your startup applications. Use `projektor &` to start the
-  key binding daemon.
+* Add projektor to your startup applications. Restart your session or run `projektor &` to start the
+  key binding daemon. The daemon should start automatically on your next login.
 * Done! Use `Super+Q` to open the launcher. Happy projekting :)
 
 ## Building
