@@ -131,4 +131,33 @@ websearch:
   # on your system. You can specify absolute path to an image file as well,
   # e.g. `/home/me/.projektor/google.png`
   icon: web-browser
+ui:
+  # use as a string. In a near future it will be proportinal to screen size (%)
+  width: "600"
+  height: "300"
 ```
+
+Projektor styles should be placed at `~/.projektor/styles.css`.
+
+Here's is de default style:
+
+```css
+GtkEntry {
+  background-image: none;
+  border: none;
+  box-shadow: none;
+  font-size: 12pt;
+}
+GtkTreeView {
+  background-color: transparent;
+  font-size: 8pt;
+}
+GtkTreeView:selected {
+  background-color: rgba(0,0,0,0.1);
+}
+GtkTreeView.cell {
+  padding: 6px 3px;
+}
+```
+
+
