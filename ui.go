@@ -417,7 +417,7 @@ func SetupUi(dry bool) {
 	provider := gtk.NewCssProvider()
 	screen := gdk.GetDefaultDisplay().GetDefaultScreen()
 	gtk.StyleContextAddProviderForScreen(screen, provider, gtk.STYLE_PROVIDER_PRIORITY_APPLICATION)
-	err := provider.LoadFromData(CSS_CODE)
+	err := provider.LoadFromData(AppStyle())
 	if err != nil {
 		errduring("CSS loading", err, "")
 	}
