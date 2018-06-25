@@ -81,11 +81,11 @@ Projektor configuration file is located at `~/.projektor/config.yaml`.
 Here's annotation for every paramater of the default config:
 
 ```yaml
-# Key bind, used by Projektor daemon. `mod4` is the Windows (Super) key.
+# Key bind, used by Projektor daemon. `Mod4` is the Windows (Super) key.
 # If your Super+Q shortcut doesn't work, edit this option.
 # You can use modifier keys `shift` and `control`.
 # To identify some complex keybind use `xbindkeys` tool.
-keybind: mod4-q
+keybind: Mod4-q
 # How often should projektor daemon run an instance in the background with
 # '-dry' flag?
 # The dry instances are run to force the kernel to cache all the data needed

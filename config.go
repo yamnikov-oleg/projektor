@@ -44,7 +44,7 @@ var (
 func DefaultConfig() *ProjektorConfig {
 	c := &ProjektorConfig{}
 
-	c.KeyBind = "mod4-q"
+	c.KeyBind = "Mod4-q"
 	c.ForceCacheInterval = 60
 
 	c.EnabledCategories.Calc = true
