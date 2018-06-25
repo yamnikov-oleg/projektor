@@ -119,10 +119,6 @@ func (ei *EntriesIterator) Entry() *LaunchEntry {
 }
 
 func SearchAppEntries(query string) LaunchEntriesList {
-	if query == "" {
-		return nil
-	}
-
 	loQuery := strings.ToLower(query)
 	results := LaunchEntriesList{}
 
