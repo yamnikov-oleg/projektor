@@ -30,6 +30,10 @@ type ProjektorConfig struct {
 		Engine string
 		Icon   string
 	}
+	UI struct {
+		Width  string
+		Height string
+	}
 }
 
 var (
@@ -57,6 +61,9 @@ func DefaultConfig() *ProjektorConfig {
 
 	c.WebSearch.Engine = "https://google.com/search?q=%s"
 	c.WebSearch.Icon = "web-browser"
+
+	c.UI.Width = "400"
+	c.UI.Height = "480"
 
 	return c
 }
