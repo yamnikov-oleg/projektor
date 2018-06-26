@@ -1,5 +1,11 @@
 package main
 
+import (
+	"io/ioutil"
+	"os"
+	"path"
+)
+
 const CSS_CODE = `
   GtkEntry {
     background-image: none;
@@ -18,3 +24,15 @@ const CSS_CODE = `
     padding: 6px 3px;
   }
 `
+
+var (
+	StylesFilePath = path.Join(AppDir, "styles.css")
+)
+
+func AppStyle() string {
+	if _, err := os.Stat(StylesFilePath); !os.IsNotExist(err) {
+		cssBytes, _ := ioutil.ReadFile(StylesFilePath)
+		return string(cssBytes)
+	}
+	return CSS_CODE
+}

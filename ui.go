@@ -5,6 +5,7 @@ import (
 	"os"
 	"os/exec"
 	"runtime"
+	"strconv"
 	"strings"
 	"unsafe"
 
@@ -342,10 +343,12 @@ func SetupUi(dry bool) {
 	logf("Window\n")
 	Ui.Window.SetPosition(gtk.WIN_POS_CENTER)
 	Ui.Window.SetGravity(gdk.GRAVITY_SOUTH)
+	w, _ := strconv.Atoi(Config.UI.Width)
+	h, _ := strconv.Atoi(Config.UI.Height)
+	Ui.Window.SetSizeRequest(w, h)
 	Ui.Window.SetDecorated(false)
 	Ui.Window.SetSkipTaskbarHint(true)
 	Ui.Window.SetBorderWidth(6)
-	Ui.Window.SetSizeRequest(400, 480)
 	Ui.Window.Connect("key-press-event", func(ctx *glib.CallbackContext) bool {
 		arg := ctx.Args(0)
 		e := *(**gdk.EventKey)(unsafe.Pointer(&arg))
@@ -414,7 +417,7 @@ func SetupUi(dry bool) {
 	provider := gtk.NewCssProvider()
 	screen := gdk.GetDefaultDisplay().GetDefaultScreen()
 	gtk.StyleContextAddProviderForScreen(screen, provider, gtk.STYLE_PROVIDER_PRIORITY_APPLICATION)
-	err := provider.LoadFromData(CSS_CODE)
+	err := provider.LoadFromData(AppStyle())
 	if err != nil {
 		errduring("CSS loading", err, "")
 	}
