@@ -132,14 +132,14 @@ websearch:
   # e.g. `/home/me/.projektor/google.png`
   icon: web-browser
 ui:
-  # use as a string. In a near future it will be proportinal to screen size (%)
+  # These values must be quoted so they would be parsed as strings. This is required for future support of sizes proportional to screen size.
   width: "600"
   height: "300"
 ```
 
 Projektor styles should be placed at `~/.projektor/styles.css`.
 
-Here's is de default style:
+Here is the default style:
 
 ```css
 GtkEntry {
